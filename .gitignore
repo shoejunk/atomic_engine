@@ -1,0 +1,37 @@
+# Build directories
+build/
+out/
+bin/
+
+# IDE-specific files
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Compiled binaries and libraries
+*.exe
+*.dll
+*.so
+*.a
+*.lib
+*.pdb
+
+# Dependency directories
+cmake/CPM.cmake
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+# Other
+.DS_Store
+Thumbs.db
