@@ -20,6 +20,11 @@ namespace atom
 
 		bool update() override;
 
+		sf::RenderWindow& operator()()
+		{
+			return m_window;
+		}
+
 	private:
 		sf::RenderWindow m_window;
 	};
