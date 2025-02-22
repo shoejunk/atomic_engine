@@ -6,3 +6,4 @@ Use a m_ in front of member variables.
 Put open braces their own new line.
 
 The repository for this project is at https://github.com/shoejunk/atomic_engine.git
+Use the main branch, not master
