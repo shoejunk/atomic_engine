@@ -1,0 +1,7 @@
+Follow these coding style guidelines:
+Use tabs instead of spaces. The tabs should be 4 spaces wide.
+Use snake case.
+Use a c_ in front of classes.
+Use a m_ in front of member variables.
+Put open braces their own new line.
+When editing files, you don't have to wait for each tool to finish updating on one file before moving on to the next. You can edit as many files as you want in parallel.
