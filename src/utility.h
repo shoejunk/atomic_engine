@@ -1,8 +1,18 @@
 #pragma once
 
+#include <vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <Windows.h>
+#include <memory>
+#include <format>
+#include <ostream>
+
 namespace atom
 {
-    consteval size_t get_string_length(const char* str)
+    constexpr size_t get_string_length(const char* str)
     {
         size_t length = 0;
         while (str[length] != '\0')
@@ -12,7 +22,7 @@ namespace atom
         return length;
     }
 
-    consteval uint32_t fnv1a(const char* key, uint32_t seed = 0)
+    constexpr uint32_t fnv1a(const char* key, uint32_t seed = 0)
     {
         constexpr uint32_t fnv_prime = 16777619;
         uint32_t hash = seed;
@@ -45,5 +55,125 @@ namespace atom
         return fnv1a(key);
     }
 
-	static_assert("atomic_engine"_h == 3024981448, "Hash of \"atomic_engine\" is not 3024981448");
+    static_assert("atomic_engine"_h == 3024981448, "Hash of \"atomic_engine\" is not 3024981448");
+
+    template<bool Debug = true, bool Line = false, bool Disabled = false, std::ostream&... ConstOstreams>
+    class c_logger
+    {
+    public:
+        template<typename... Args>
+        c_logger(Args... ostreams)
+            : m_ostreams{ ostreams... }
+        {
+        }
+
+        template<typename... Args>
+        c_logger(char const* file, Args... ostreams) : m_ostreams{ ostreams... }
+        {
+            if (file != nullptr)
+            {
+                m_file_stream = std::make_unique<std::ofstream>(file);
+            }
+        }
+
+        ~c_logger() = default;
+
+        template<uint32_t... Tags>
+        void enable()
+        {
+            (m_tags.push_back(Tags), ...);
+        }
+
+        void disable(uint32_t tag)
+        {
+            m_tags.erase(std::remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
+        }
+
+        template<uint32_t... Tags>
+        void disable()
+        {
+            (disable(Tags), ...);
+        }
+
+        template<typename... Args>
+        void operator()(std::format_string<Args...> fmt, Args&&... args) const
+        {
+            if constexpr (Disabled)
+            {
+                return;
+            }
+
+            std::string message = std::format(fmt, std::forward<Args>(args)...);
+            if constexpr (Line)
+            {
+                message += '\n';
+            }
+
+            if constexpr (Debug)
+            {
+                OutputDebugStringA(std::string_view(message));
+            }
+
+            std::ostringstream batch_output;
+            batch_output << message;
+
+            ((ConstOstreams << batch_output.str()), ...);
+            for (auto& os : m_ostreams)
+            {
+                *os << batch_output.str();
+            }
+
+            if (m_file_stream != nullptr)
+            {
+                *m_file_stream << batch_output.str();
+            }
+        }
+
+        template<typename... Args>
+        void operator()(std::vector<uint32_t> const&& tags, std::format_string<Args...> fmt, Args&&... args) const
+        {
+            if constexpr (Disabled)
+            {
+                return;
+            }
+
+            bool tag_found = false;
+            for (auto tag : m_tags)
+            {
+                if (std::find(tags.begin(), tags.end(), tag) == tags.end())
+                {
+                    continue;
+                }
+
+                tag_found = true;
+                break;
+            }
+
+            if (!tag_found)
+            {
+                return;
+            }
+
+            operator()(fmt, std::forward<Args>(args)...);
+        }
+
+    private:
+        std::vector<std::ostream*> m_ostreams;
+        std::unique_ptr<std::ofstream> m_file_stream;
+        std::vector<uint32_t> m_tags;
+    };
+
+    // Disable debug logging in release builds
+#if defined NDEBUG
+    c_logger<true, false, true> debug;
+    c_logger<true, true, true> debugln;
+#else
+    c_logger<true, false> debug;
+    c_logger<true, true> debugln;
+#endif
+
+    c_logger<true, false, false, std::cout> log("log.txt");
+    c_logger<true, true, false, std::cout> logln("log.txt");
+    c_logger<true, false, false, std::cerr> error("log.txt");
+    c_logger<true, true, false, std::cerr> errorln("log.txt");
 }
