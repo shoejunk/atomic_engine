@@ -9,6 +9,7 @@
 #include <memory>
 #include <format>
 #include <ostream>
+#include <sstream>
 
 namespace atom
 {
@@ -111,7 +112,7 @@ namespace atom
 
             if constexpr (Debug)
             {
-                OutputDebugStringA(std::string_view(message));
+                OutputDebugStringA(message.c_str());
             }
 
             std::ostringstream batch_output;
