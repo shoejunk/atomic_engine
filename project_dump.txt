@@ -1,0 +1,725 @@
+
+=== FILE: .\build.bat ===
+@echo off
+
+REM Build the project and redirect output to build_output.txt
+cmake --build build --config Release > build_output.txt 2>&1
+
+REM Check if the build was successful
+if %ERRORLEVEL% EQU 0 (
+	echo Build succeeded! Output saved to build_output.txt
+) else (
+	echo Build failed! Check build_output.txt for details
+	exit /b 1
+)
+
+
+=== FILE: .\build_debug.bat ===
+@echo off
+
+REM Build the project and redirect output to build_output.txt
+cmake --build build --config Debug > build_output.txt 2>&1
+
+REM Check if the build was successful
+if %ERRORLEVEL% EQU 0 (
+	echo Build succeeded! Output saved to build_output.txt
+) else (
+	echo Build failed! Check build_output.txt for details
+	exit /b 1
+)
+
+
+=== FILE: .\build_release.bat ===
+@echo off
+
+REM Build the project and redirect output to build_output.txt
+cmake --build build --config Release > build_output.txt 2>&1
+
+REM Check if the build was successful
+if %ERRORLEVEL% EQU 0 (
+	echo Build succeeded! Output saved to build_output.txt
+) else (
+	echo Build failed! Check build_output.txt for details
+	exit /b 1
+)
+
+
+=== FILE: .\CMakeLists.txt ===
+cmake_minimum_required(VERSION 3.14)
+
+project(atomic_engine VERSION 0.0.1)
+
+# Use CPM.cmake to manage dependencies
+include(cmake/CPM.cmake)
+
+# Add SFML
+CPMAddPackage(
+  NAME SFML
+  GITHUB_REPOSITORY SFML/SFML
+  GIT_TAG 2.6.x
+  OPTIONS
+    "SFML_BUILD_WINDOW TRUE"
+    "SFML_BUILD_GRAPHICS TRUE"
+    "SFML_BUILD_AUDIO TRUE"
+    "SFML_BUILD_NETWORK TRUE"
+)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+file(GLOB SOURCES "src/*.cpp")
+file(GLOB HEADERS "src/*.h")
+
+# Create single src filter
+source_group("src" FILES ${SOURCES} ${HEADERS})
+
+# Create executable
+add_executable(atomic_engine ${SOURCES} ${HEADERS})
+
+# Link SFML libraries
+target_link_libraries(atomic_engine
+  sfml-window
+  sfml-graphics
+  sfml-audio
+  sfml-network
+  sfml-system
+)
+
+if(MSVC)
+    source_group(TREE ${CMAKE_SOURCE_DIR}/src FILES ${MAIN_FILE})
+    set_target_properties(${PROJECT_NAME} PROPERTIES
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+    )
+endif()
+
+# Copy SFML DLLs to executable directory
+add_custom_command(TARGET atomic_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:sfml-system>
+        $<TARGET_FILE:sfml-window>
+        $<TARGET_FILE:sfml-graphics>
+        $<TARGET_FILE:sfml-audio>
+        $<TARGET_FILE:sfml-network>
+        $<TARGET_FILE_DIR:atomic_engine>
+)
+
+# Copy assets folder to executable directory
+add_custom_command(TARGET atomic_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:atomic_engine>/assets
+)
+
+
+=== FILE: .\debug.bat ===
+@echo off
+
+REM Run the Debug executable
+.\build\Debug\atomic_engine.exe
+
+if %errorlevel% neq 0 (
+    echo Failed to run the application.
+    exit /b %errorlevel%
+)
+
+echo Done!
+
+
+=== FILE: .\dump.bat ===
+python dump.py
+
+=== FILE: .\generate.bat ===
+@echo off
+echo Generating project files...
+cmake -B build -S .
+echo Done!
+
+
+=== FILE: .\release.bat ===
+@echo off
+
+REM Run the Release executable
+.\build\Release\atomic_engine.exe
+
+if %errorlevel% neq 0 (
+    echo Failed to run the application.
+    exit /b %errorlevel%
+)
+
+echo Done!
+
+
+=== FILE: .\run.bat ===
+@echo off
+
+REM Run the Release executable
+.\build\Release\atomic_engine.exe
+
+if %errorlevel% neq 0 (
+    echo Failed to run the application.
+    exit /b %errorlevel%
+)
+
+echo Done!
+
+
+=== FILE: .\src\atom.cpp ===
+#include "atom.h"
+
+namespace atom
+{
+	bool c_atom::update()
+	{
+		bool ok = true;
+		for (auto* child : m_children)
+		{
+			ok &= child->update();
+		}
+		return ok;
+	}
+
+	bool c_atom::go()
+	{
+		bool ok = true;
+		for (auto* child : m_children)
+		{
+			ok &= child->go();
+		}
+		return ok;
+	}
+
+	void c_atom::add_child(c_atom& child)
+	{
+		m_children.push_back(&child);
+	}
+} // namespace atom
+
+
+=== FILE: .\src\atom.h ===
+#pragma once
+
+#include <vector>
+
+namespace atom
+{
+	class c_atom
+	{
+	public:
+		c_atom() {};
+		~c_atom() {};
+		virtual bool update();
+		virtual bool go();
+		void add_child(c_atom& child);
+
+	protected:
+		std::vector<c_atom*> m_children;
+	};
+} // namespace atom
+
+
+=== FILE: .\src\drawable.h ===
+#pragma once
+
+#include "atom.h"
+#include "utility.h"
+#include <SFML/Graphics/Drawable.hpp>
+
+namespace atom
+{
+	class c_drawable
+	{
+	public:
+		static constexpr uint32_t get_type() { return "drawable"_h; }
+
+		virtual sf::Drawable& operator()() = 0;
+	};
+} // namespace atom
+
+
+=== FILE: .\src\game_loop.cpp ===
+#include "game_loop.h"
+
+namespace atom
+{
+	c_game_loop::c_game_loop()
+	{
+	}
+
+	c_game_loop::~c_game_loop()
+	{
+	}
+
+	bool c_game_loop::go()
+	{
+		bool any_true = true;
+		while (any_true)
+		{
+			any_true = false;
+			for (auto* child : m_children)
+			{
+				any_true |= child->update();
+			}
+		}
+		return true;
+	}
+} // namespace atom
+
+
+=== FILE: .\src\game_loop.h ===
+#pragma once
+
+#include "atom.h"
+
+namespace atom
+{
+	class c_game_loop : public c_atom
+	{
+	public:
+		c_game_loop();
+		~c_game_loop();
+
+		bool go() override;
+	};
+} // namespace atom
+
+
+=== FILE: .\src\game_object.cpp ===
+#include "game_object.h"
+
+
+=== FILE: .\src\game_object.h ===
+#pragma once
+
+#include <unordered_map>
+#include "atom.h"
+
+namespace atom
+{
+	class c_component
+	{
+	};
+
+	class c_game_object : public c_atom
+	{
+	private:
+		std::unordered_map<uint32_t, c_component*> m_components;
+	};
+}
+
+
+=== FILE: .\src\main.cpp ===
+#include "game_loop.h"
+#include "sprite.h"
+#include "texture.h"
+#include "utility.h"
+#include "window.h"
+
+#include <iostream>
+
+using namespace atom;
+
+int main()
+{
+	auto window = c_window{"Atomic Engine"};
+	auto sprite = c_sprite{c_texture{"assets/texture.png"}, window()};
+	sprite.set_position(100, 100); // Set position
+	sprite.set_scale(0.2f, 0.2f); // Set scale
+	window.add_drawable(sprite);
+	auto game = c_game_loop{};
+	game.add_child(window);
+	game.go();
+
+	return 0;
+}
+
+
+=== FILE: .\src\sprite.cpp ===
+#include "sprite.h"
+
+namespace atom
+{
+    c_sprite::c_sprite(const c_texture& texture, sf::RenderWindow& window)
+        : m_window(window)
+    {
+        m_sprite.setTexture(texture());
+        m_sprite.setPosition(0, 0); // Default position
+        m_sprite.setScale(1, 1); // Default scale
+    }
+} // namespace atom
+
+
+=== FILE: .\src\sprite.h ===
+#pragma once
+
+#include "atom.h"
+#include "texture.h"
+#include <SFML/Graphics.hpp>
+
+namespace atom
+{
+	class c_sprite : public c_atom, public c_drawable
+    {
+    public:
+        c_sprite(const c_texture& texture, sf::RenderWindow& window);
+		sf::Drawable& operator()() { return m_sprite; }
+
+		void set_position(float x, float y)
+		{
+			m_sprite.setPosition(x, y);
+		}
+
+		void set_scale(float x, float y)
+		{
+			m_sprite.setScale(x, y);
+		}
+
+    private:
+        sf::Sprite m_sprite;
+        sf::RenderWindow& m_window;
+    };
+} // namespace atom
+
+
+=== FILE: .\src\texture.cpp ===
+#include "texture.h"
+
+namespace atom
+{
+    c_texture::c_texture(const std::string& file_path)
+    {
+        if (!m_texture.loadFromFile(file_path))
+        {
+            throw std::runtime_error("Failed to load texture: " + file_path);
+        }
+    }
+} // namespace atom
+
+
+=== FILE: .\src\texture.h ===
+#pragma once
+
+#include <string>
+#include <SFML/Graphics.hpp>
+#include "game_object.h"
+#include "drawable.h"
+
+namespace atom
+{
+    class c_texture
+    {
+    public:
+        c_texture(const std::string& file_path);
+
+        sf::Texture& operator()()
+        {
+            return m_texture;
+        }
+
+        const sf::Texture& operator()() const
+        {
+            return m_texture;
+        }
+
+    private:
+        sf::Texture m_texture;
+    };
+} // namespace atom
+
+=== FILE: .\src\utility.cpp ===
+#include "utility.h"
+
+namespace atom
+{
+#ifdef _DEBUG
+    c_logger<true, false> debug;
+    c_logger<true, true> debugln;
+#else
+    c_logger<true, false, true> debug;
+    c_logger<true, true, true> debugln;
+#endif
+    c_logger<true, false, false, std::cout> log("log.txt");
+    c_logger<true, true, false, std::cout> logln("log.txt");
+    c_logger<true, false, false, std::cerr> error("log.txt");
+    c_logger<true, true, false, std::cerr> errorln("log.txt");
+}
+
+
+=== FILE: .\src\utility.h ===
+#pragma once
+
+#include <vector>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <algorithm>
+#include <Windows.h>
+#include <memory>
+#include <format>
+#include <ostream>
+#include <sstream>
+
+namespace atom
+{
+    constexpr size_t get_string_length(const char* str)
+    {
+        size_t length = 0;
+        while (str[length] != '\0')
+        {
+            length++;
+        }
+        return length;
+    }
+
+    inline constexpr uint32_t fnv1a(const char* key, uint32_t seed = 0)
+    {
+        constexpr uint32_t fnv_prime = 16777619;
+        uint32_t hash = seed;
+
+        for (uint32_t i = 0; i < get_string_length(key); i++)
+        {
+            hash ^= static_cast<uint8_t>(key[i]);
+            hash *= fnv_prime;
+        }
+
+        return hash;
+    }
+
+    inline uint32_t fnv1a(const std::string& key, uint32_t seed = 0)
+    {
+        constexpr uint32_t fnv_prime = 16777619;
+        uint32_t hash = seed;
+
+        for (uint32_t i = 0; i < key.size(); i++)
+        {
+            hash ^= static_cast<uint8_t>(key[i]);
+            hash *= fnv_prime;
+        }
+
+        return hash;
+    }
+
+    consteval uint32_t operator""_h(const char* key, size_t length)
+    {
+        return fnv1a(key);
+    }
+
+    static_assert("atomic_engine"_h == 3024981448, "Hash of \"atomic_engine\" is not 3024981448");
+
+    template<bool Debug = true, bool Line = false, bool Disabled = false, std::ostream&... ConstOstreams>
+    class c_logger
+    {
+    public:
+        template<typename... Args>
+        c_logger(Args... ostreams)
+            : m_ostreams{ ostreams... }
+        {
+        }
+
+        template<typename... Args>
+        c_logger(char const* file, Args... ostreams) : m_ostreams{ ostreams... }
+        {
+            if (file != nullptr)
+            {
+                m_file_stream = std::make_unique<std::ofstream>(file);
+            }
+        }
+
+        ~c_logger() = default;
+
+        template<uint32_t... Tags>
+        inline void enable()
+        {
+            (m_tags.push_back(Tags), ...);
+        }
+
+        inline void disable(uint32_t tag)
+        {
+            m_tags.erase(std::remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
+        }
+
+        template<uint32_t... Tags>
+        inline void disable()
+        {
+            (disable(Tags), ...);
+        }
+
+        template<typename... Args>
+        inline void operator()(std::format_string<Args...> fmt, Args&&... args) const
+        {
+            if constexpr (Disabled)
+            {
+                return;
+            }
+
+            std::string message = std::format(fmt, std::forward<Args>(args)...);
+            if constexpr (Line)
+            {
+                message += '\n';
+            }
+
+            if constexpr (Debug)
+            {
+                OutputDebugStringA(message.c_str());
+            }
+
+            std::ostringstream batch_output;
+            batch_output << message;
+
+            ((ConstOstreams << batch_output.str()), ...);
+            for (auto& os : m_ostreams)
+            {
+                *os << batch_output.str();
+            }
+
+            if (m_file_stream != nullptr)
+            {
+                *m_file_stream << batch_output.str();
+            }
+        }
+
+        template<typename... Args>
+        inline void operator()(std::vector<uint32_t> const&& tags, std::format_string<Args...> fmt, Args&&... args) const
+        {
+            if constexpr (Disabled)
+            {
+                return;
+            }
+
+            bool tag_found = false;
+            for (auto tag : m_tags)
+            {
+                if (std::find(tags.begin(), tags.end(), tag) == tags.end())
+                {
+                    continue;
+                }
+
+                tag_found = true;
+                break;
+            }
+
+            if (!tag_found)
+            {
+                return;
+            }
+
+            operator()(fmt, std::forward<Args>(args)...);
+        }
+
+    private:
+        std::vector<std::ostream*> m_ostreams;
+        std::unique_ptr<std::ofstream> m_file_stream;
+        std::vector<uint32_t> m_tags;
+    };
+
+    // Disable debug logging in release builds
+#if defined NDEBUG
+    extern c_logger<true, false, true> debug;
+    extern c_logger<true, true, true> debugln;
+#else
+    extern c_logger<true, false> debug;
+    extern c_logger<true, true> debugln;
+#endif
+
+    extern c_logger<true, false, false, std::cout> log;
+    extern c_logger<true, true, false, std::cout> logln;
+    extern c_logger<true, false, false, std::cerr> error;
+    extern c_logger<true, true, false, std::cerr> errorln;
+}
+
+
+=== FILE: .\src\window.cpp ===
+#define NOMINMAX
+
+#include "window.h"
+
+namespace atom
+{
+	c_window::c_window(
+		const std::string& title,
+		unsigned int width,
+		unsigned int height,
+		unsigned int position_x,
+		unsigned int position_y,
+		unsigned int framerate_limit
+	)
+	{
+		m_window.create(sf::VideoMode(width, height), title);
+		m_window.setPosition(sf::Vector2i(position_x, position_y));
+		m_window.setFramerateLimit(framerate_limit);
+	}
+
+	c_window::~c_window()
+	{
+		m_window.close();
+	}
+
+	bool c_window::update()
+	{
+		if (!m_window.isOpen())
+		{
+			return false;
+		}
+
+		for (auto event = sf::Event{}; m_window.pollEvent(event);)
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				m_window.close();
+				return false;
+			}
+		}
+
+		c_atom::update();
+
+		m_window.clear();
+		for (auto& drawable : m_drawables)
+		{
+			m_window.draw((*drawable)());
+		}
+		m_window.display();
+		return true;
+	}
+} // namespace atom
+
+
+=== FILE: .\src\window.h ===
+#pragma once
+
+#include "atom.h"
+#include "drawable.h"
+#include "game_object.h"
+#include <SFML/Graphics.hpp>
+
+namespace atom
+{
+	class c_window : public c_atom
+	{
+	public:
+		c_window(
+			const std::string& title = "Atomic Engine",
+			unsigned int width = 800,
+			unsigned int height = 600,
+			unsigned int position_x = 100,
+			unsigned int position_y = 100,
+			unsigned int framerate_limit = 60
+		);
+		~c_window();
+
+		bool update() override;
+
+		sf::RenderWindow& operator()()
+		{
+			return m_window;
+		}
+
+		void add_drawable(c_drawable& drawable)
+		{
+			m_drawables.push_back(&drawable);
+		}
+
+	private:
+		sf::RenderWindow m_window;
+		std::vector<c_drawable*> m_drawables;
+	};
+} // namespace atom
+

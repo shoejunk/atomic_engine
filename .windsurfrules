@@ -15,3 +15,6 @@ Run build_debug.bat when you need to build in debug mode.
 Run debug.bat when you need to run in debug mode.
 Run build_release.bat when you need to build in release mode.
 Run release.bat when you need to run in release mode.
+
+Put all source files (.h and cpp) in the src folder.
+All classes should go in the atom namespace.

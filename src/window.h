@@ -1,6 +1,7 @@
 #pragma once
 
 #include "atom.h"
+#include "drawable.h"
 #include <SFML/Graphics.hpp>
 
 namespace atom
@@ -25,7 +26,13 @@ namespace atom
 			return m_window;
 		}
 
+		void add_drawable(c_drawable& drawable)
+		{
+			m_drawables.push_back(&drawable);
+		}
+
 	private:
 		sf::RenderWindow m_window;
+		std::vector<c_drawable*> m_drawables;
 	};
 } // namespace atom

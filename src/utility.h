@@ -23,7 +23,7 @@ namespace atom
         return length;
     }
 
-    constexpr uint32_t fnv1a(const char* key, uint32_t seed = 0)
+    inline constexpr uint32_t fnv1a(const char* key, uint32_t seed = 0)
     {
         constexpr uint32_t fnv_prime = 16777619;
         uint32_t hash = seed;
@@ -37,7 +37,7 @@ namespace atom
         return hash;
     }
 
-    uint32_t fnv1a(const std::string& key, uint32_t seed = 0)
+    inline uint32_t fnv1a(const std::string& key, uint32_t seed = 0)
     {
         constexpr uint32_t fnv_prime = 16777619;
         uint32_t hash = seed;
@@ -80,24 +80,24 @@ namespace atom
         ~c_logger() = default;
 
         template<uint32_t... Tags>
-        void enable()
+        inline void enable()
         {
             (m_tags.push_back(Tags), ...);
         }
 
-        void disable(uint32_t tag)
+        inline void disable(uint32_t tag)
         {
             m_tags.erase(std::remove(m_tags.begin(), m_tags.end(), tag), m_tags.end());
         }
 
         template<uint32_t... Tags>
-        void disable()
+        inline void disable()
         {
             (disable(Tags), ...);
         }
 
         template<typename... Args>
-        void operator()(std::format_string<Args...> fmt, Args&&... args) const
+        inline void operator()(std::format_string<Args...> fmt, Args&&... args) const
         {
             if constexpr (Disabled)
             {
@@ -131,7 +131,7 @@ namespace atom
         }
 
         template<typename... Args>
-        void operator()(std::vector<uint32_t> const&& tags, std::format_string<Args...> fmt, Args&&... args) const
+        inline void operator()(std::vector<uint32_t> const&& tags, std::format_string<Args...> fmt, Args&&... args) const
         {
             if constexpr (Disabled)
             {
@@ -166,15 +166,15 @@ namespace atom
 
     // Disable debug logging in release builds
 #if defined NDEBUG
-    c_logger<true, false, true> debug;
-    c_logger<true, true, true> debugln;
+    extern c_logger<true, false, true> debug;
+    extern c_logger<true, true, true> debugln;
 #else
-    c_logger<true, false> debug;
-    c_logger<true, true> debugln;
+    extern c_logger<true, false> debug;
+    extern c_logger<true, true> debugln;
 #endif
 
-    c_logger<true, false, false, std::cout> log("log.txt");
-    c_logger<true, true, false, std::cout> logln("log.txt");
-    c_logger<true, false, false, std::cerr> error("log.txt");
-    c_logger<true, true, false, std::cerr> errorln("log.txt");
+    extern c_logger<true, false, false, std::cout> log;
+    extern c_logger<true, true, false, std::cout> logln;
+    extern c_logger<true, false, false, std::cerr> error;
+    extern c_logger<true, true, false, std::cerr> errorln;
 }

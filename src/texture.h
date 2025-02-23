@@ -2,11 +2,11 @@
 
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "atom.h"
+#include "drawable.h"
 
 namespace atom
 {
-    class c_texture : public c_atom
+    class c_texture
     {
     public:
         c_texture(const std::string& file_path);

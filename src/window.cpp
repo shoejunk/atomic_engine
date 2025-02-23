@@ -1,3 +1,5 @@
+#define NOMINMAX
+
 #include "window.h"
 
 namespace atom
@@ -37,9 +39,14 @@ namespace atom
 			}
 		}
 
-		m_window.clear();
-		m_window.display();
+		c_atom::update();
 
-		return c_atom::update();
+		m_window.clear();
+		for (auto& drawable : m_drawables)
+		{
+			m_window.draw((*drawable)());
+		}
+		m_window.display();
+		return true;
 	}
 } // namespace atom

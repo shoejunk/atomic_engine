@@ -55,3 +55,10 @@ add_custom_command(TARGET atomic_engine POST_BUILD
         $<TARGET_FILE:sfml-network>
         $<TARGET_FILE_DIR:atomic_engine>
 )
+
+# Copy assets folder to executable directory
+add_custom_command(TARGET atomic_engine POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:atomic_engine>/assets
+)
