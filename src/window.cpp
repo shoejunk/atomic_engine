@@ -1,5 +1,3 @@
-#define NOMINMAX
-
 #include "window.h"
 
 namespace atom
