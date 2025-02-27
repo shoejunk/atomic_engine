@@ -1,5 +1,7 @@
 #include "window.h"
 
+#include "drawable.h"
+
 namespace atom
 {
 	c_window::c_window(
@@ -40,7 +42,8 @@ namespace atom
 		c_atom::update();
 
 		m_window.clear();
-		for (auto& drawable : m_drawables)
+		auto drawables = get_connections<c_drawable>();
+		for (auto& drawable : drawables)
 		{
 			m_window.draw((*drawable)());
 		}

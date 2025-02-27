@@ -1,8 +1,9 @@
 #pragma once
 
+#include "drawable.h"
+
 #include <string>
 #include <SFML/Graphics.hpp>
-#include "drawable.h"
 
 namespace atom
 {

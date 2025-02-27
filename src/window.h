@@ -1,14 +1,16 @@
 #pragma once
 
 #include "atom.h"
-#include "drawable.h"
 #include <SFML/Graphics.hpp>
 
 namespace atom
 {
-	class c_window : public c_atom
+	class c_window : public t_atom<c_window>
 	{
 	public:
+		// Only need to define this constant
+		static constexpr uint32_t kind_id() { return "window"_h; }
+
 		c_window(
 			const std::string& title = "Atomic Engine",
 			unsigned int width = 800,
@@ -17,6 +19,7 @@ namespace atom
 			unsigned int position_y = 100,
 			unsigned int framerate_limit = 60
 		);
+
 		~c_window();
 
 		bool update() override;
@@ -26,13 +29,7 @@ namespace atom
 			return m_window;
 		}
 
-		void add_drawable(c_drawable& drawable)
-		{
-			m_drawables.push_back(&drawable);
-		}
-
 	private:
 		sf::RenderWindow m_window;
-		std::vector<c_drawable*> m_drawables;
 	};
 } // namespace atom

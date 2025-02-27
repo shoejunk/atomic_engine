@@ -2,6 +2,7 @@ Follow these coding style guidelines:
 Use tabs instead of spaces. The tabs should be 4 spaces wide.
 Use snake case.
 Use a c_ in front of classes.
+Use a t_ in front of templates.
 Use a m_ in front of member variables.
 Put open braces their own new line.
 
@@ -18,3 +19,7 @@ Run release.bat when you need to run in release mode.
 
 Put all source files (.h and cpp) in the src folder.
 All classes should go in the atom namespace.
+
+Most things should inherite from c_atom.
+c_atom is like a game object and a component combined to create a node system where each node can have multiple child nodes.
+Each child node is also a c_atom and an atom is only allowed one child per family. A family is the type of atom that directly inherits from c_atom and all children of that type have the same family. For example, c_drawable is the family, and c_sprite, which inherits from c_drawable, is also in the c_drawable family. If another drawable like c_3dmodel also inherited from c_drawable, an atom couldn't have both c_sprte and c_drawable as children because they are in the same family. In addition to children, each atom also has connections. A connection is a list of atoms for each family. A parent owns all its children so when the parent is destroyed, the children should get destroyed, but the connections should only be weak pointers and what they point to should not get destroyed when an atom is destroyed.
