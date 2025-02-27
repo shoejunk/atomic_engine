@@ -3,6 +3,7 @@
 #include "utility.h"
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 namespace atom
 {
@@ -60,27 +61,29 @@ namespace atom
 
 		virtual bool update();
 		virtual bool go();
-		bool add_child(c_atom& child);
+		bool add_child(std::unique_ptr<c_atom> child);
 
-		void add_connection(c_atom& connection)
+		void add_connection(std::shared_ptr<c_atom> connection)
 		{
-			m_connections[connection.get_family()].push_back(&connection);
+			m_connections[connection->get_family()].push_back(connection);
 		}
 
 		template<class T>
-		std::vector<T*> get_connections()
+		std::vector<std::shared_ptr<T>> get_connections()
 		{
 			auto& connections = m_connections[T::kind()];
-			std::vector<T*> result;
+			std::vector<std::shared_ptr<T>> result;
 			for (auto& connection : connections)
 			{
-				result.push_back(static_cast<T*>(connection));
+				if (auto ptr = connection.lock()) {
+					result.push_back(std::static_pointer_cast<T>(ptr));
+				}
 			}
 			return result;
 		}
 
 	protected:
-		std::unordered_map<uint32_t, c_atom*> m_children;
-		std::unordered_map<uint32_t, std::vector<c_atom*>> m_connections;
+		std::unordered_map<uint32_t, std::unique_ptr<c_atom>> m_children;
+		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
 	};
 } // namespace atom

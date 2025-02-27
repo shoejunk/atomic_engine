@@ -22,14 +22,14 @@ namespace atom
 		return ok;
 	}
 
-	bool c_atom::add_child(c_atom& child)
+	bool c_atom::add_child(std::unique_ptr<c_atom> child)
 	{
-		auto it = m_children.find(child.get_family());
+		auto it = m_children.find(child->get_family());
 		if (it != m_children.end())
 		{
 			return false;
 		}
-		m_children[child.get_family()] = &child;
+		m_children[child->get_family()] = std::move(child);
 		return true;
 	}
 } // namespace atom
