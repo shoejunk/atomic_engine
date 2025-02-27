@@ -82,6 +82,21 @@ namespace atom
 			return result;
 		}
 
+		template<typename T>
+		T* as()
+		{
+			if (kind_of(T::kind())) {
+				return static_cast<T*>(this);
+			}
+
+			auto it = m_children.find(T::family());
+			if (it != m_children.end()) {
+				return static_cast<T*>(it->second.get());
+			}
+
+			return nullptr;
+		}
+
 	protected:
 		std::unordered_map<uint32_t, std::unique_ptr<c_atom>> m_children;
 		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
