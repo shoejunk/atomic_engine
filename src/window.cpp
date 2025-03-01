@@ -1,28 +1,9 @@
 #include "window.h"
-
 #include "drawable.h"
+#include "input_manager_aspect.h"
 
 namespace atom
 {
-	c_window::c_window(
-		const std::string& title,
-		unsigned int width,
-		unsigned int height,
-		unsigned int position_x,
-		unsigned int position_y,
-		unsigned int framerate_limit
-	)
-	{
-		m_window.create(sf::VideoMode(width, height), title);
-		m_window.setPosition(sf::Vector2i(position_x, position_y));
-		m_window.setFramerateLimit(framerate_limit);
-	}
-
-	c_window::~c_window()
-	{
-		m_window.close();
-	}
-
 	bool c_window::update()
 	{
 		if (!m_window.isOpen())
@@ -37,17 +18,33 @@ namespace atom
 				m_window.close();
 				return false;
 			}
+
+			// Forward events to input managers
+			auto input_managers = get_connections<i_input_manager>();
+			for (auto& atom : input_managers)
+			{
+				if (auto input_manager = atom->as<i_input_manager>())
+				{
+					input_manager->process_event(event);
+				}
+			}
 		}
 
 		c_atom::update();
 
 		m_window.clear();
-		auto drawables = get_connections<c_drawable>();
-		for (auto& drawable : drawables)
+
+		// Draw all drawables
+		auto drawable_connections = get_connections<i_drawable>();
+		for (auto& atom : drawable_connections)
 		{
-			m_window.draw((*drawable)());
+			if (auto drawable = atom->as<i_drawable>())
+			{
+				m_window.draw(drawable->get_drawable());
+			}
 		}
+
 		m_window.display();
 		return true;
 	}
-} // namespace atom
+}

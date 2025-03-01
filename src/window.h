@@ -1,16 +1,13 @@
 #pragma once
-
 #include "atom.h"
+#include "drawable.h"
 #include <SFML/Graphics.hpp>
 
 namespace atom
 {
-	class c_window : public t_atom<c_window>
+	class c_window : public c_atom
 	{
 	public:
-		// Only need to define this constant
-		static constexpr uint32_t kind_id() { return "window"_h; }
-
 		c_window(
 			const std::string& title = "Atomic Engine",
 			unsigned int width = 800,
@@ -18,9 +15,17 @@ namespace atom
 			unsigned int position_x = 100,
 			unsigned int position_y = 100,
 			unsigned int framerate_limit = 60
-		);
+		)
+		{
+			m_window.create(sf::VideoMode(width, height), title);
+			m_window.setPosition(sf::Vector2i(position_x, position_y));
+			m_window.setFramerateLimit(framerate_limit);
+		}
 
-		~c_window();
+		~c_window()
+		{
+			m_window.close();
+		}
 
 		bool update() override;
 
@@ -32,4 +37,4 @@ namespace atom
 	private:
 		sf::RenderWindow m_window;
 	};
-} // namespace atom
+}

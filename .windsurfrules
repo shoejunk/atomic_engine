@@ -20,6 +20,64 @@ Run release.bat when you need to run in release mode.
 Put all source files (.h and cpp) in the src folder.
 All classes should go in the atom namespace.
 
-Most things should inherite from c_atom.
-c_atom is like a game object and a component combined to create a node system where each node can have multiple child nodes.
-Each child node is also a c_atom and an atom is only allowed one child per family. A family is the type of atom that directly inherits from c_atom and all children of that type have the same family. For example, c_drawable is the family, and c_sprite, which inherits from c_drawable, is also in the c_drawable family. If another drawable like c_3dmodel also inherited from c_drawable, an atom couldn't have both c_sprte and c_drawable as children because they are in the same family. In addition to children, each atom also has connections. A connection is a list of atoms for each family. A parent owns all its children so when the parent is destroyed, the children should get destroyed, but the connections should only be weak pointers and what they point to should not get destroyed when an atom is destroyed.
+Most things should inherite from c_atom which incorporates the aspect system.
+# Concise Overview of the Aspect System
+
+## Core Concept
+The aspect system is a capability-focused component architecture that replaces inheritance hierarchies with interface-based composition. Components explicitly declare what they can do rather than what they are.
+
+## Key Components
+
+1. **Aspect Interfaces**
+   - Pure virtual interfaces that define specific capabilities
+   - Each has a unique type identifier (`uint32_t` hash)
+   - Examples: `i_movable`, `i_drawable`, `i_action_handler`
+
+2. **Aspect Registration**
+   - Components register capabilities in their constructor
+   - Each component explicitly reports its aspects via `get_aspect_types()`
+   - Aspects are stored in a map keyed by type hash
+
+3. **Capability Flow**
+   - When a child is added to a parent, its aspects flow upward
+   - Parent gains access to all aspects implemented by its direct children
+   - Aspect conflicts (same aspect from multiple sources) are prevented
+
+4. **Capability Access**
+   - Components query for capabilities with `as<T>()`
+   - Access is direct with no runtime search overhead
+   - Example: `if (auto movable = atom->as<i_movable>()) { movable->move(x, y); }`
+
+5. **Connection System**
+   - Components can be connected by aspect type
+   - Example: Window connects to all components with the drawable aspect
+   - Connections are weak references that don't affect ownership
+
+## Usage Patterns
+
+1. **Direct Implementation**
+   ```cpp
+   class c_sprite : public c_atom, public i_drawable, public i_movable {...}
+   ```
+
+2. **Capability Composition**
+   ```cpp
+   class c_entity : public c_atom
+   {
+     c_entity()
+	 {
+       add_child(std::make_unique<c_movement_component>()); // Adds movable aspect
+       add_child(std::make_unique<c_renderer_component>()); // Adds drawable aspect
+     }
+   }
+   ```
+
+3. **Capability Delegation**
+   ```cpp
+   class c_player : public c_atom, public i_movable
+   {
+     void move(float dx, float dy) override { m_sprite->move(dx, dy); }
+   }
+   ```
+
+The aspect system combines the clarity of interfaces with the flexibility of composition, creating a predictable, capability-based architecture without the limitations of inheritance hierarchies.

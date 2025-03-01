@@ -1,18 +1,18 @@
 #pragma once
-
-#include "atom.h"
-
+#include "aspect.h"
 #include <SFML/Graphics/Drawable.hpp>
 
 namespace atom
 {
-	class c_drawable : public t_atom<c_drawable>
+	// Drawable aspect - anything that can be drawn
+	class i_drawable : public i_aspect
 	{
 	public:
-		// Only need to define this constant, everything else comes from the template
-		static constexpr uint32_t kind_id() { return "drawable"_h; }
+		static constexpr uint32_t type() { return "drawable"_h; }
 
-		// Get the underlying drawable object
-		virtual sf::Drawable& operator()() = 0;
+		virtual uint32_t get_aspect_type() const override { return type(); }
+
+		// Get the underlying drawable
+		virtual sf::Drawable& get_drawable() = 0;
 	};
-} // namespace atom
+}

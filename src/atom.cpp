@@ -5,7 +5,7 @@ namespace atom
 	bool c_atom::update()
 	{
 		bool ok = true;
-		for (auto& [family, child] : m_children)
+		for (auto& child : m_children)
 		{
 			ok &= child->update();
 		}
@@ -15,7 +15,7 @@ namespace atom
 	bool c_atom::go()
 	{
 		bool ok = true;
-		for (auto& [family, child] : m_children)
+		for (auto& child : m_children)
 		{
 			ok &= child->go();
 		}
@@ -24,12 +24,49 @@ namespace atom
 
 	bool c_atom::add_child(std::unique_ptr<c_atom> child)
 	{
-		auto it = m_children.find(child->get_family());
-		if (it != m_children.end())
+		if (!child)
 		{
 			return false;
 		}
-		m_children[child->get_family()] = std::move(child);
+
+		// Check for aspect conflicts
+		auto child_aspects = child->get_aspect_types();
+		for (auto aspect_type : child_aspects)
+		{
+			if (has(aspect_type))
+			{
+				// Conflict found - this atom already has this aspect
+				return false;
+			}
+		}
+
+		// Set parent pointer
+		child->set_parent(this);
+
+		// Register all child aspects in the parent
+		for (auto aspect_type : child_aspects)
+		{
+			// Because aspect_type is in child_aspects, we know that child implements an aspect
+			i_aspect* aspect_ptr = reinterpret_cast<i_aspect*>(child.get());
+			if (aspect_ptr)
+			{
+				m_aspects[aspect_type] = aspect_ptr;
+			}
+		}
+
+		// Add child to children vector
+		m_children.push_back(std::move(child));
+
 		return true;
+	}
+
+	void c_atom::add_connection(std::shared_ptr<i_aspect> connection)
+	{
+		if (!connection)
+		{
+			return;
+		}
+
+		m_connections[connection->get_aspect_type()].push_back(connection);
 	}
 } // namespace atom

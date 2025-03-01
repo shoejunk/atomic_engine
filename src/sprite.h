@@ -1,33 +1,54 @@
 #pragma once
-
 #include "atom.h"
 #include "drawable.h"
+#include "movable.h"
+#include "scalable.h"
 #include "texture.h"
 #include <SFML/Graphics.hpp>
 
 namespace atom
 {
-    class c_sprite : public t_atom<c_sprite, c_drawable>
-    {
-    public:
-        // Only need this constant, all the virtual methods are handled by t_atom
-        static constexpr uint32_t kind_id() { return "sprite"_h; }
-        
-        c_sprite(const c_texture& texture);
-        
-        sf::Drawable& operator()() override { return m_sprite; }
-        
-        void set_position(float x, float y)
-        {
-            m_sprite.setPosition(x, y);
-        }
+	class c_sprite : public c_atom,
+		public i_drawable,
+		public i_movable,
+		public i_scalable
+	{
+	public:
+		c_sprite(const c_texture& texture)
+		{
+			m_sprite.setTexture(texture());
+			m_sprite.setPosition(0, 0);
+			m_sprite.setScale(1, 1);
 
-        void set_scale(float x, float y)
-        {
-            m_sprite.setScale(x, y);
-        }
-        
-    private:
-        sf::Sprite m_sprite;
-    };
-} // namespace atom
+			// Register aspects
+			register_aspect(static_cast<i_drawable*>(this));
+			register_aspect(static_cast<i_movable*>(this));
+			register_aspect(static_cast<i_scalable*>(this));
+		}
+
+		// Override get_aspect_types to return all implemented aspect types
+		std::vector<uint32_t> get_aspect_types() const override
+		{
+			return {
+				i_drawable::type(),
+				i_movable::type(),
+				i_scalable::type()
+			};
+		}
+
+		// i_drawable implementation
+		sf::Drawable& get_drawable() override { return m_sprite; }
+
+		// i_movable implementation
+		sf::Vector2f get_position() const override { return m_sprite.getPosition(); }
+		void set_position(float x, float y) override { m_sprite.setPosition(x, y); }
+		void move(float dx, float dy) override { m_sprite.move(dx, dy); }
+
+		// i_scalable implementation
+		sf::Vector2f get_scale() const override { return m_sprite.getScale(); }
+		void set_scale(float x, float y) override { m_sprite.setScale(x, y); }
+
+	private:
+		sf::Sprite m_sprite;
+	};
+}

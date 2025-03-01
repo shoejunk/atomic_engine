@@ -1,104 +1,87 @@
 #pragma once
 
 #include "utility.h"
+#include "aspect.h"
 #include <vector>
 #include <unordered_map>
 #include <memory>
+#include <algorithm>
 
 namespace atom
 {
-	// Forward declaration of the atom base
-	class c_atom;
-
-	// Base template for all atoms
-	template<typename Derived, typename Parent = c_atom>
-	class t_atom : public Parent
-	{
-	public:
-		static constexpr uint32_t kind() {
-			// This should be specialized in derived classes
-			return Derived::kind_id();
-		}
-
-		// For classes directly inheriting from c_atom, family is the same as kind
-		// For others, it's the family of the first ancestor above c_atom
-		static constexpr uint32_t family() {
-			if constexpr (std::is_same_v<Parent, c_atom>) {
-				return kind();
-			}
-			else {
-				return Parent::family();
-			}
-		}
-
-		// Virtual function implementations
-		virtual uint32_t get_kind() const override { return kind(); }
-
-		virtual bool kind_of(uint32_t in_kind) override {
-			return in_kind == kind() || Parent::kind_of(in_kind);
-		}
-
-		virtual uint32_t parent_kind() override { return Parent::kind(); }
-
-		virtual uint32_t get_family() override { return family(); }
-	};
-
 	// Base atom class
 	class c_atom
 	{
 	public:
-		static constexpr uint32_t kind() { return "atom"_h; }
-
-	public:
 		c_atom() = default;
 		virtual ~c_atom() = default;
 
-		// Pure virtual functions that derived classes will implement via CRTP
-		virtual uint32_t get_kind() const = 0;
-		virtual bool kind_of(uint32_t in_kind) { return in_kind == kind(); }
-		virtual uint32_t parent_kind() = 0;
-		virtual uint32_t get_family() = 0;
-
+		// Basic atom methods
 		virtual bool update();
 		virtual bool go();
+
+		// Get the vector of aspect types this atom implements directly
+		virtual std::vector<uint32_t> get_aspect_types() const { return {}; }
+
+		// Child management
 		bool add_child(std::unique_ptr<c_atom> child);
 
-		void add_connection(std::shared_ptr<c_atom> connection)
-		{
-			m_connections[connection->get_family()].push_back(connection);
-		}
+		// Connection management - based on aspects
+		void add_connection(std::shared_ptr<i_aspect> connection);
 
-		template<class T>
-		std::vector<std::shared_ptr<T>> get_connections()
+		template<typename AspectType>
+		std::vector<std::shared_ptr<c_atom>> get_connections()
 		{
-			auto& connections = m_connections[T::kind()];
-			std::vector<std::shared_ptr<T>> result;
+			auto& connections = m_connections[AspectType::type()];
+			std::vector<std::shared_ptr<c_atom>> result;
 			for (auto& connection : connections)
 			{
 				if (auto ptr = connection.lock()) {
-					result.push_back(std::static_pointer_cast<T>(ptr));
+					result.push_back(ptr);
 				}
 			}
 			return result;
 		}
 
-		template<typename T>
-		T* as()
-		{
-			if (kind_of(T::kind())) {
-				return static_cast<T*>(this);
-			}
+		// Parent management
+		void set_parent(c_atom* parent) { m_parent = parent; }
+		c_atom* get_parent() const { return m_parent; }
 
-			auto it = m_children.find(T::family());
-			if (it != m_children.end()) {
-				return static_cast<T*>(it->second.get());
+		template<typename AspectType>
+		AspectType* as()
+		{
+			auto it = m_aspects.find(AspectType::type());
+			if (it != m_aspects.end())
+			{
+				return static_cast<AspectType*>(it->second);
 			}
 
 			return nullptr;
 		}
 
+		// Aspect management
+		void register_aspect(i_aspect* aspect)
+		{
+			if (aspect) {
+				m_aspects[aspect->get_aspect_type()] = aspect;
+			}
+		}
+
+		void unregister_aspect(uint32_t aspect_type)
+		{
+			m_aspects.erase(aspect_type);
+		}
+
+		// Check if the atom has a specific aspect
+		bool has(uint32_t aspect_type) const
+		{
+			return m_aspects.find(aspect_type) != m_aspects.end();
+		}
+
 	protected:
-		std::unordered_map<uint32_t, std::unique_ptr<c_atom>> m_children;
-		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
+		c_atom* m_parent = nullptr;
+		std::vector<std::unique_ptr<c_atom>> m_children;
+		std::unordered_map<uint32_t, std::vector<std::weak_ptr<i_aspect>>> m_connections;
+		std::unordered_map<uint32_t, i_aspect*> m_aspects;
 	};
 } // namespace atom

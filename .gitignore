@@ -35,3 +35,4 @@ install_manifest.txt
 # Other
 .DS_Store
 Thumbs.db
+build_output.txt

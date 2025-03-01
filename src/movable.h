@@ -1,0 +1,24 @@
+#pragma once
+#include "aspect.h"
+#include <SFML/System/Vector2.hpp>
+
+namespace atom
+{
+	// Movable aspect - anything that can be positioned
+	class i_movable : public i_aspect
+	{
+	public:
+		static constexpr uint32_t type() { return "movable"_h; }
+
+		virtual uint32_t get_aspect_type() const override { return type(); }
+
+		// Get position
+		virtual sf::Vector2f get_position() const = 0;
+
+		// Set position
+		virtual void set_position(float x, float y) = 0;
+
+		// Relative movement
+		virtual void move(float dx, float dy) = 0;
+	};
+}
