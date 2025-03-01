@@ -21,7 +21,7 @@ namespace atom
 			};
 
 			// Register this as an action handler aspect
-			register_aspect(this);
+			register_aspect<i_action_handler>(this);
 		}
 
 		// Override get_aspect_types

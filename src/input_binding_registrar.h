@@ -64,7 +64,7 @@ namespace atom
 	public:
 		c_input_binding_registrar()
 		{
-			register_aspect(this);
+			register_aspect<i_input_binding_registrar>(this);
 		}
 
 		// Get aspect types

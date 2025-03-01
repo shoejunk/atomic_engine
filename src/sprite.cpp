@@ -9,8 +9,8 @@ namespace atom
 		m_sprite.setScale(1, 1);
 
 		// Register aspects
-		register_aspect(static_cast<i_drawable*>(this));
-		register_aspect(static_cast<i_movable*>(this));
-		register_aspect(static_cast<i_scalable*>(this));
+		register_aspect<i_drawable>(this);
+		register_aspect<i_movable>(this);
+		register_aspect<i_scalable>(this);
 	}
 } // namespace atom

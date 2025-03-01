@@ -9,6 +9,8 @@ namespace atom
 	class i_drawable : public i_aspect
 	{
 	public:
+		virtual ~i_drawable() = default;
+
 		static constexpr uint32_t type() { return "drawable"_h; }
 
 		virtual uint32_t get_aspect_type() const override { return type(); }

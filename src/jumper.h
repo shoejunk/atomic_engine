@@ -23,7 +23,7 @@ namespace atom
 	public:
 		c_jumper()
 		{
-			register_aspect(this);
+			register_aspect<i_jumpable>(this);
 		}
 		
 		// Get aspect types

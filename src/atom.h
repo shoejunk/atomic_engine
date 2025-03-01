@@ -65,18 +65,17 @@ namespace atom
 			auto it = m_aspects.find(AspectType::type());
 			if (it != m_aspects.end())
 			{
-				return static_cast<AspectType*>(it->second);
+				return dynamic_cast<AspectType*>(it->second);
 			}
 
 			return nullptr;
 		}
 
 		// Aspect management
-		void register_aspect(i_aspect* aspect)
+		template<typename AspectType>
+		void register_aspect(c_atom* atom)
 		{
-			if (aspect) {
-				m_aspects[aspect->get_aspect_type()] = aspect;
-			}
+			m_aspects[AspectType::type()] = atom;
 		}
 
 		void unregister_aspect(uint32_t aspect_type)
@@ -94,6 +93,8 @@ namespace atom
 		c_atom* m_parent = nullptr;
 		std::vector<std::unique_ptr<c_atom>> m_children;
 		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
-		std::unordered_map<uint32_t, i_aspect*> m_aspects;
+
+	private:
+		std::unordered_map<uint32_t, c_atom*> m_aspects;
 	};
 } // namespace atom

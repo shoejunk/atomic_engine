@@ -46,12 +46,7 @@ namespace atom
 		// Register all child aspects in the parent
 		for (auto aspect_type : child_aspects)
 		{
-			// Because aspect_type is in child_aspects, we know that child implements an aspect
-			i_aspect* aspect_ptr = reinterpret_cast<i_aspect*>(child.get());
-			if (aspect_ptr)
-			{
-				m_aspects[aspect_type] = aspect_ptr;
-			}
+			m_aspects[aspect_type] = child.get();
 		}
 
 		// Add child to children vector

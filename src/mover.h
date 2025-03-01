@@ -11,7 +11,7 @@ namespace atom
 	public:
 		c_mover()
 		{
-			register_aspect(this);
+			register_aspect<i_movable>(this);
 		}
 
 		// Get aspect types

@@ -25,8 +25,8 @@ namespace atom
 			auto action_handler = std::make_unique<c_player_action_handler>();
 
 			// Register aspects on this player
-			m_aspects[i_movable::type()] = static_cast<i_movable*>(this);
-			m_aspects[i_drawable::type()] = static_cast<i_drawable*>(this);
+			register_aspect<i_movable>(this);
+			register_aspect<i_drawable>(this);
 
 			// Add action handler as child (will register its aspects)
 			add_child(std::move(action_handler));

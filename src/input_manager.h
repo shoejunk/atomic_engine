@@ -46,7 +46,7 @@ namespace atom
 		c_input_manager()
 		{
 			// Register this as an input manager aspect
-			register_aspect(this);
+			register_aspect<i_input_manager>(this);
 		}
 
 		// Get aspect types

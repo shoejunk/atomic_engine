@@ -12,7 +12,7 @@ namespace atom
 	public:
 		c_menu_action_handler()
 		{
-			register_aspect(this);
+			register_aspect<i_action_handler>(this);
 			
 			m_handled_actions = {
 				"menu_up"_h, "menu_down"_h, "menu_select"_h, "menu_back"_h
