@@ -22,7 +22,7 @@ Make sure to use the dot-slash previx when running the .bat files. (e.g. .\build
 Put all source files (.h and cpp) in the src folder.
 All classes should go in the atom namespace.
 
-Most things should inherite from c_atom which incorporates the aspect system.
+Most things should either inherit from c_atom which incorporates the aspect system, or should be an aspect, which is a pure vitual interface class.
 # Concise Overview of the Aspect System
 
 ## Core Concept
