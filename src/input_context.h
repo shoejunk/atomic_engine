@@ -29,10 +29,10 @@ namespace atom
 		virtual void remove_bindings_for_action(uint32_t action_hash) = 0;
 
 		// Process an input event and distribute actions to handlers
-		virtual void process_event(const sf::Event& event, const std::vector<std::shared_ptr<i_action_handler>>& handlers) = 0;
+		virtual void process_event(const sf::Event& event, const std::vector<std::weak_ptr<c_atom>>& handlers) = 0;
 
 		// Update held inputs
-		virtual void update(const std::vector<std::shared_ptr<i_action_handler>>& handlers) = 0;
+		virtual void update(const std::vector<std::weak_ptr<c_atom>>& handlers) = 0;
 
 		// Get the context hash
 		virtual uint32_t get_context_hash() const = 0;
@@ -62,10 +62,10 @@ namespace atom
 		void remove_bindings_for_action(uint32_t action_hash) override;
 
 		// Process an input event and distribute actions to handlers
-		void process_event(const sf::Event& event, const std::vector<std::shared_ptr<i_action_handler>>& handlers) override;
+		void process_event(const sf::Event& event, const std::vector<std::weak_ptr<c_atom>>& handlers) override;
 
 		// Update held inputs
-		void update(const std::vector<std::shared_ptr<i_action_handler>>& handlers) override;
+		void update(const std::vector<std::weak_ptr<c_atom>>& handlers) override;
 
 		// Get the context hash
 		uint32_t get_context_hash() const override;
@@ -75,6 +75,6 @@ namespace atom
 		std::vector<std::shared_ptr<c_input_binding>> m_bindings;
 
 		// Helper to trigger action on handlers
-		void trigger_action(uint32_t action_hash, const std::vector<std::shared_ptr<i_action_handler>>& handlers) const;
+		void trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const;
 	};
 }

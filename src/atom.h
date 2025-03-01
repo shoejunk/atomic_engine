@@ -27,19 +27,31 @@ namespace atom
 		bool add_child(std::unique_ptr<c_atom> child);
 
 		// Connection management - based on aspects
-		void add_connection(std::shared_ptr<i_aspect> connection);
+		// Add connection by atom with specific aspect
+		template<typename AspectType>
+		void add_connection(std::shared_ptr<c_atom> atom)
+		{
+			if (!atom || !atom->as<AspectType>())
+			{
+				return;
+			}
+			
+			m_connections[AspectType::type()].push_back(std::weak_ptr<c_atom>(atom));
+		}
 
 		template<typename AspectType>
 		std::vector<std::shared_ptr<c_atom>> get_connections()
 		{
-			auto& connections = m_connections[AspectType::type()];
 			std::vector<std::shared_ptr<c_atom>> result;
+			
+			auto& connections = m_connections[AspectType::type()];
 			for (auto& connection : connections)
 			{
 				if (auto ptr = connection.lock()) {
 					result.push_back(ptr);
 				}
 			}
+			
 			return result;
 		}
 
@@ -81,7 +93,7 @@ namespace atom
 	protected:
 		c_atom* m_parent = nullptr;
 		std::vector<std::unique_ptr<c_atom>> m_children;
-		std::unordered_map<uint32_t, std::vector<std::weak_ptr<i_aspect>>> m_connections;
+		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
 		std::unordered_map<uint32_t, i_aspect*> m_aspects;
 	};
 } // namespace atom

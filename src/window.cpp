@@ -1,6 +1,6 @@
 #include "window.h"
 #include "drawable.h"
-#include "input_manager_aspect.h"
+#include "input_manager.h"
 
 namespace atom
 {

@@ -35,12 +35,6 @@ namespace atom
 		// Clear all contexts
 		virtual void clear_contexts() = 0;
 
-		// Add an action handler
-		virtual void add_handler(std::shared_ptr<i_action_handler> handler) = 0;
-
-		// Remove an action handler
-		virtual void remove_handler(std::shared_ptr<i_action_handler> handler) = 0;
-
 		// Process an event through the active context
 		virtual void process_event(const sf::Event& event) = 0;
 	};
@@ -80,18 +74,11 @@ namespace atom
 		// Clear all contexts
 		void clear_contexts() override;
 
-		// Add an action handler
-		void add_handler(std::shared_ptr<i_action_handler> handler) override;
-
-		// Remove an action handler
-		void remove_handler(std::shared_ptr<i_action_handler> handler) override;
-
 		// Process an event through the active context
 		void process_event(const sf::Event& event) override;
 
 	private:
 		std::unordered_map<uint32_t, std::shared_ptr<c_input_context>> m_contexts;
 		std::stack<std::shared_ptr<c_input_context>> m_context_stack;
-		std::vector<std::shared_ptr<i_action_handler>> m_handlers;
 	};
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "aspect.h"
+#include "utility.h"
 #include <SFML/Graphics/Drawable.hpp>
 
 namespace atom

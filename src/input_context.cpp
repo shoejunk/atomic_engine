@@ -40,7 +40,7 @@ namespace atom
 		}
 	}
 
-	void c_input_context::process_event(const sf::Event& event, const std::vector<std::shared_ptr<c_action_handler>>& handlers)
+	void c_input_context::process_event(const sf::Event& event, const std::vector<std::weak_ptr<c_atom>>& handlers)
 	{
 		for (auto& binding : m_bindings)
 		{
@@ -51,7 +51,7 @@ namespace atom
 		}
 	}
 
-	void c_input_context::update(const std::vector<std::shared_ptr<c_action_handler>>& handlers)
+	void c_input_context::update(const std::vector<std::weak_ptr<c_atom>>& handlers)
 	{
 		for (auto& binding : m_bindings)
 		{
@@ -62,14 +62,26 @@ namespace atom
 		}
 	}
 
-	void c_input_context::trigger_action(uint32_t action_hash, const std::vector<std::shared_ptr<c_action_handler>>& handlers) const
+	void c_input_context::trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const
 	{
 		// Send the action to all handlers that can process it
 		for (auto& handler : handlers)
 		{
-			if (handler->can_handle(action_hash))
+			auto* atom = handler.lock().get();
+			if (atom == nullptr)
 			{
-				handler->handle_action(action_hash);
+				continue;
+			}
+
+			auto* action_handler = atom->as<i_action_handler>();
+			if (action_handler == nullptr)
+			{
+				continue;
+			}
+
+			if (action_handler->can_handle(action_hash))
+			{
+				action_handler->handle_action(action_hash);
 			}
 		}
 	}

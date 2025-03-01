@@ -3,10 +3,6 @@
 
 namespace atom
 {
-	c_input_manager::c_input_manager()
-	{
-	}
-
 	bool c_input_manager::update()
 	{
 		// First update the base class
@@ -22,7 +18,7 @@ namespace atom
 		}
 
 		// Update the active context for held inputs
-		m_context_stack.top()->update(m_handlers);
+		m_context_stack.top()->update(m_connections[i_action_handler::type()]);
 
 		return true;
 	}
@@ -68,24 +64,7 @@ namespace atom
 			m_context_stack.pop();
 		}
 	}
-
-	void c_input_manager::add_handler(std::shared_ptr<c_action_handler> handler)
-	{
-		if (handler)
-		{
-			m_handlers.push_back(handler);
-		}
-	}
-
-	void c_input_manager::remove_handler(std::shared_ptr<c_action_handler> handler)
-	{
-		auto it = std::find(m_handlers.begin(), m_handlers.end(), handler);
-		if (it != m_handlers.end())
-		{
-			m_handlers.erase(it);
-		}
-	}
-
+ 
 	void c_input_manager::process_event(const sf::Event& event)
 	{
 		// If there's no active context, nothing to do
@@ -95,6 +74,6 @@ namespace atom
 		}
 
 		// Process the event through the active context
-		m_context_stack.top()->process_event(event, m_handlers);
+		m_context_stack.top()->process_event(event, m_connections[i_action_handler::type()]);
 	}
 }

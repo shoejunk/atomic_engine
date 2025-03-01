@@ -59,14 +59,4 @@ namespace atom
 
 		return true;
 	}
-
-	void c_atom::add_connection(std::shared_ptr<i_aspect> connection)
-	{
-		if (!connection)
-		{
-			return;
-		}
-
-		m_connections[connection->get_aspect_type()].push_back(connection);
-	}
 } // namespace atom

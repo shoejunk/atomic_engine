@@ -16,7 +16,7 @@ namespace atom
 		while (any_true)
 		{
 			any_true = false;
-			for (auto& [family, child] : m_children)
+			for (auto& child : m_children)
 			{
 				any_true |= child->update();
 			}

@@ -27,7 +27,7 @@ namespace atom
 		// Override get_aspect_types
 		std::vector<uint32_t> get_aspect_types() const override
 		{
-			return { i_action_handler::type() };
+			return std::vector<uint32_t>{ i_action_handler::type() };
 		}
 
 		// Check if we can handle this action (i_action_handler implementation)

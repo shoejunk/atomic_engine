@@ -95,6 +95,10 @@ namespace atom
 			{
 				return true;
 			}
+			else if (is_held())
+			{
+				return true;
+			}
 		}
 		else
 		{

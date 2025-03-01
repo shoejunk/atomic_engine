@@ -8,7 +8,6 @@
 #include "sprite.h"
 #include "utility.h"
 #include "window.h"
-#include "menu.h"
 
 namespace atom
 {
@@ -20,7 +19,7 @@ namespace atom
 
 		// Set up input system
 		auto input_manager = std::make_shared<c_input_manager>();
-		window->add_connection(input_manager); // Connect by aspect type
+		window->add_connection<i_input_manager>(input_manager);
 
 		// Create a registrar for binding
 		auto registrar = std::make_unique<c_input_binding_registrar>();
@@ -30,16 +29,14 @@ namespace atom
 		// This works because they don't share any aspects
 		input_manager->add_child(std::move(registrar));
 
-		// Create player and menu as shared_ptrs
+		// Create player as shared_ptr
 		auto player = std::make_shared<c_player>(*texture);
-		auto menu = std::make_shared<c_menu>();
 
-		// Connect player to window for rendering (window will use player's drawable aspect)
-		window->add_connection(player);
+		// Connect player to window for rendering
+		window->add_connection<i_drawable>(player);
 
-		// Register player and menu with input manager
-		input_manager->register_atom(player);
-		input_manager->register_atom(menu);
+		// Register player with input manager
+		input_manager->add_connection<i_action_handler>(player);
 
 		// Define action and context hash constants
 		constexpr uint32_t GAMEPLAY_CONTEXT = "gameplay"_h;
