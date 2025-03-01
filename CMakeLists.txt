@@ -43,6 +43,9 @@ if(MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
     )
+    add_compile_options(/WX)
+else()
+    add_compile_options(-Werror)
 endif()
 
 # Copy SFML DLLs to executable directory
