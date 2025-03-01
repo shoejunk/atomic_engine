@@ -35,12 +35,10 @@ namespace atom
 	}
 
 	// Input binding aspect
-	class i_input_binding : public i_aspect
+	class i_input_binding
 	{
 	public:
 		static constexpr uint32_t type() { return "input_binding"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Check if this binding is activated by the given event
 		virtual bool is_activated(const sf::Event& event) const = 0;

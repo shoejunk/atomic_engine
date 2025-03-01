@@ -13,12 +13,10 @@ namespace atom
 	class i_action_handler;
 
 	// Input manager aspect
-	class i_input_manager : public i_aspect
+	class i_input_manager
 	{
 	public:
 		static constexpr uint32_t type() { return "input_manager"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Create a new context
 		virtual std::shared_ptr<c_input_context> create_context(uint32_t context_hash) = 0;

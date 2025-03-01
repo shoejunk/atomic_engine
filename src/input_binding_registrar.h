@@ -7,12 +7,10 @@
 namespace atom
 {
 	// Input binding registrar aspect
-	class i_input_binding_registrar : public i_aspect
+	class i_input_binding_registrar
 	{
 	public:
 		static constexpr uint32_t type() { return "input_binding_registrar"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Register a binding to an action in a context
 		virtual void register_binding(

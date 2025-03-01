@@ -1,17 +1,14 @@
 #pragma once
 #include "atom.h"
 #include "utility.h"
-#include "aspect.h"
 
 namespace atom
 {
 	// Jumpable aspect - anything that can jump
-	class i_jumpable : public i_aspect
+	class i_jumpable
 	{
 	public:
 		static constexpr uint32_t type() { return "jumpable"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Jump with a given force
 		virtual void jump() = 0;
@@ -26,12 +23,6 @@ namespace atom
 			register_aspect<i_jumpable>(this);
 		}
 		
-		// Get aspect types
-		std::vector<uint32_t> get_aspect_types() const override
-		{
-			return { i_jumpable::type() };
-		}
-
 		// Jump with a given force
 		void jump() override
 		{

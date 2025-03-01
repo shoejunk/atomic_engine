@@ -1,7 +1,6 @@
 #pragma once
 
 #include "utility.h"
-#include "aspect.h"
 #include <vector>
 #include <unordered_map>
 #include <memory>

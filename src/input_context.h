@@ -12,12 +12,10 @@ namespace atom
 	class i_action_handler;
 
 	// Input context aspect
-	class i_input_context : public i_aspect
+	class i_input_context
 	{
 	public:
 		static constexpr uint32_t type() { return "input_context"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Add a binding to this context
 		virtual void add_binding(std::shared_ptr<c_input_binding> binding) = 0;

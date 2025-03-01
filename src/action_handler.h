@@ -5,12 +5,10 @@
 namespace atom
 {
 	// Base class for action handlers
-	class i_action_handler : public i_aspect
+	class i_action_handler
 	{
 	public:
 		static constexpr uint32_t type() { return "action_handler"_h; }
-
-		virtual uint32_t get_aspect_type() const override { return type(); }
 
 		// Handle an action by its hash
 		virtual bool handle_action(uint32_t action_hash) = 0;
