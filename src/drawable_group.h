@@ -6,10 +6,10 @@
 namespace atom
 {
 	// A drawable that can contain multiple other drawables with transforms
-	class TransformableDrawable : public sf::Drawable
+	class c_drawable_group : public sf::Drawable
 	{
 	public:
-		TransformableDrawable() {}
+		c_drawable_group() {}
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const override
 		{
@@ -57,6 +57,22 @@ namespace atom
 			while (!m_transform_stack.empty())
 			{
 				m_transform_stack.pop();
+			}
+		}
+
+		// Clears all drawables except the first one
+		void clear_except_first()
+		{
+			if (!m_drawables.empty())
+			{
+				// Save the first drawable
+				DrawableItem first = m_drawables[0];
+				
+				// Clear everything
+				clear();
+				
+				// Add back the first drawable
+				m_drawables.push_back(first);
 			}
 		}
 

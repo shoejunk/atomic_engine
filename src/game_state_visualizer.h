@@ -62,10 +62,9 @@ namespace atom
 		void update_visualization() override
 		{
 			// Clear pieces (but keep grid)
-			while (m_drawable_group.size() > 1)
-			{
-				m_drawable_group.popTransform();
-			}
+			// The previous approach caused an infinite loop because popTransform() affects m_transform_stack
+			// but size() looks at m_drawables, which are separate data structures
+			m_drawable_group.clear_except_first();
 
 			// Add all pieces from game state
 			for (uint8_t x = 0; x < m_game_state->get_board_width(); x++)
@@ -119,7 +118,7 @@ namespace atom
 		sf::RenderTexture m_grid_texture;
 		sf::Sprite m_grid_sprite;
 		sf::RenderStates m_render_states;
-		TransformableDrawable m_drawable_group;
+		c_drawable_group m_drawable_group;
 
 		void initialize_grid()
 		{
