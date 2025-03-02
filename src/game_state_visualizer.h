@@ -149,8 +149,8 @@ namespace atom
 				for (uint8_t y = 0; y < m_game_state->get_board_height(); y++)
 				{
 					// Set position
-					cell.setPosition(x * m_cell_size, y * m_cell_size);
-					dark_cell.setPosition(x * m_cell_size, y * m_cell_size);
+					cell.setPosition(static_cast<float>(x * m_cell_size), static_cast<float>(y * m_cell_size));
+					dark_cell.setPosition(static_cast<float>(x * m_cell_size), static_cast<float>(y * m_cell_size));
 
 					// Draw alternating colors
 					if ((x + y) % 2 == 0)
@@ -166,7 +166,7 @@ namespace atom
 
 			m_grid_texture.display();
 			m_grid_sprite.setTexture(m_grid_texture.getTexture());
-			m_grid_sprite.setPosition(m_board_x, m_board_y);
+			m_grid_sprite.setPosition(static_cast<float>(m_board_x), static_cast<float>(m_board_y));
 
 			// Set up drawable group
 			m_drawable_group.clear();

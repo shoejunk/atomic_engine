@@ -19,7 +19,8 @@ namespace atom
 		{
 			// Create sprite
 			m_sprite = std::make_shared<c_sprite>(texture);
-			m_sprite->set_scale(0.2f, 0.2f);
+			m_sprite->set_origin_center();
+			m_sprite->set_scale(0.35f, 0.35f);
 			
 			// Register aspects
 			register_aspect<i_board_position>(this);

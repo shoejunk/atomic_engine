@@ -38,6 +38,13 @@ namespace atom
 		sf::Vector2f get_scale() const override { return m_sprite.getScale(); }
 		void set_scale(float x, float y) override { m_sprite.setScale(x, y); }
 
+		// Set origin to center
+		void set_origin_center()
+		{
+			auto bounds = m_sprite.getLocalBounds();
+			m_sprite.setOrigin(bounds.width / 2.0f, bounds.height / 2.0f);
+		}
+
 	private:
 		sf::Sprite m_sprite;
 	};
