@@ -177,8 +177,7 @@ namespace atom
 		};
 		
 		// Create and connect the action handler
-		auto board_action_handler = std::make_shared<c_board_action_handler>(
-			game_state, player_piece, game_visualizer);
+		auto board_action_handler = std::make_shared<c_board_action_handler>(game_state, player_piece, game_visualizer);
 		input_manager->add_connection<i_action_handler>(board_action_handler);
 
 		// Create the game loop and start
