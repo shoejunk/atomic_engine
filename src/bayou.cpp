@@ -39,7 +39,7 @@ namespace atom
 		
 		// Create game visualizer
 		auto game_visualizer = std::make_shared<c_bayou_game_visualizer>(game_state);
-		game_visualizer->set_cell_size(64.0f);
+		game_visualizer->set_cell_size(96.0f);
 		game_visualizer->set_board_position(224.0f, 160.0f);
 
 		// Connect visualizer to window for rendering

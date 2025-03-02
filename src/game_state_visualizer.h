@@ -31,7 +31,7 @@ namespace atom
 	public:
 		c_bayou_game_visualizer(std::shared_ptr<c_bayou_game_state> game_state)
 			: m_game_state(game_state)
-			, m_cell_size(64)
+			, m_cell_size(96)
 			, m_board_x(50)
 			, m_board_y(50)
 		{
