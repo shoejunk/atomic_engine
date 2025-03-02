@@ -17,7 +17,7 @@ namespace atom
 	bool c_bayou::go()
 	{
 		// Create main game objects
-		auto window = std::make_unique<c_window>("Bayou Game", 1024, 768);
+		auto window = std::make_unique<c_window>("Bayou Game", 1280, 1024);
 		
 		// Load textures
 		auto piece_texture = std::make_unique<c_texture>("assets/texture.png");
@@ -39,8 +39,8 @@ namespace atom
 		
 		// Create game visualizer
 		auto game_visualizer = std::make_shared<c_bayou_game_visualizer>(game_state);
-		game_visualizer->set_cell_size(80.0f);
-		game_visualizer->set_board_position(100.0f, 100.0f);
+		game_visualizer->set_cell_size(64.0f);
+		game_visualizer->set_board_position(224.0f, 160.0f);
 
 		// Connect visualizer to window for rendering
 		window->add_connection<i_drawable>(game_visualizer);
