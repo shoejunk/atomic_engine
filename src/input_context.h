@@ -1,8 +1,10 @@
 #pragma once
 #include "atom.h"
-#include "input_binding.h"
+#include "action.h"
 #include "action_handler.h"
+#include "input_binding.h"
 #include <vector>
+
 #include <memory>
 #include <SFML/Window/Event.hpp>
 
@@ -73,6 +75,6 @@ namespace atom
 		std::vector<std::shared_ptr<c_input_binding>> m_bindings;
 
 		// Helper to trigger action on handlers
-		void trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const;
+		void trigger_action(c_action const& action, const std::vector<std::weak_ptr<c_atom>>& handlers) const;
 	};
 }

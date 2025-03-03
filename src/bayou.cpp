@@ -8,7 +8,6 @@
 #include "game_state_visualizer.h"
 #include "input_binding_registrar.h"
 #include "input_manager.h"
-#include "menu_action_handler.h"
 #include "texture.h"
 #include "sprite.h"
 #include "utility.h"

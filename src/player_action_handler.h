@@ -1,8 +1,11 @@
 #pragma once
-#include "atom.h"
+
+#include "action.h"
 #include "action_handler.h"
-#include "movable.h"
+#include "atom.h"
 #include "jumper.h"
+#include "movable.h"
+
 #include <vector>
 #include <algorithm>
 
@@ -38,8 +41,9 @@ namespace atom
 		}
 
 		// Handle an action (i_action_handler implementation)
-		bool handle_action(uint32_t action_hash) override
+		bool handle_action(c_action const& action) override
 		{
+			auto action_hash = action.get_action_id();
 			if (!can_handle(action_hash))
 			{
 				return false;

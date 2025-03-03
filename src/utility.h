@@ -178,4 +178,10 @@ namespace atom
     extern c_logger<true, true, false, std::cout> logln;
     extern c_logger<true, false, false, std::cerr> error;
     extern c_logger<true, true, false, std::cerr> errorln;
+
+	struct s_vector2i
+	{
+		int32_t x;
+		int32_t y;
+	};
 }

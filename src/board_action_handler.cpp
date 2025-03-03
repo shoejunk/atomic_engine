@@ -15,8 +15,10 @@ namespace atom
 		};
 	}
 
-	bool c_board_action_handler::handle_action(uint32_t action_hash)
+	bool c_board_action_handler::handle_action(c_action const& action)
 	{
+		auto action_hash = action.get_action_id();
+
 		if (!can_handle(action_hash))
 		{
 			return false;

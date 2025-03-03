@@ -1,11 +1,13 @@
 #pragma once
 
+#include "action.h"
 #include "action_handler.h"
 #include "atom.h"
 #include "bayou_state.h"
-#include "utility.h"
 #include "game_piece.h"
 #include "game_state_visualizer.h"
+
+#include "utility.h"
 
 #include <vector>
 
@@ -36,7 +38,7 @@ namespace atom
 			return std::find(m_handled_actions.begin(), m_handled_actions.end(), action_hash) != m_handled_actions.end();
 		}
 		
-		bool handle_action(uint32_t action_hash) override;
+		bool handle_action(c_action const& action) override;
 		
 	private:
 		std::shared_ptr<c_bayou_state> m_game_state;

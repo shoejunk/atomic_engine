@@ -1,4 +1,8 @@
 #include "input_context.h"
+
+#include "action.h"
+#include "screen_position_action.h"
+
 #include <algorithm>
 
 namespace atom
@@ -46,7 +50,16 @@ namespace atom
 		{
 			if (binding->is_activated(event))
 			{
-				trigger_action(binding->get_action_hash(), handlers);
+				if (event.type == sf::Event::MouseButtonPressed)
+				{
+					c_screen_position_action action(binding->get_action_hash(), s_vector2i{ event.mouseButton.x, event.mouseButton.y });
+					trigger_action(action, handlers);
+				}
+				else
+				{
+					c_action action(binding->get_action_hash());
+					trigger_action(action, handlers);
+				}
 			}
 		}
 	}
@@ -62,8 +75,10 @@ namespace atom
 		}
 	}
 
-	void c_input_context::trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const
+	void c_input_context::trigger_action(const c_action& action, const std::vector<std::weak_ptr<c_atom>>& handlers) const
 	{
+		auto action_hash = action.get_action_id();
+
 		// Send the action to all handlers that can process it
 		for (auto& handler : handlers)
 		{
@@ -81,7 +96,7 @@ namespace atom
 
 			if (action_handler->can_handle(action_hash))
 			{
-				action_handler->handle_action(action_hash);
+				action_handler->handle_action(action);
 			}
 		}
 	}
