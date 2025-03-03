@@ -24,7 +24,6 @@ namespace atom
 	public:
 		c_board_action_handler(
 			std::shared_ptr<c_bayou_game_state> game_state,
-			std::shared_ptr<c_game_piece> player_piece,
 			std::shared_ptr<c_bayou_game_visualizer> visualizer);
 		
 		std::vector<uint32_t> get_aspect_types() const override
@@ -41,8 +40,8 @@ namespace atom
 		
 	private:
 		std::shared_ptr<c_bayou_game_state> m_game_state;
-		std::shared_ptr<c_game_piece> m_player_piece;
 		std::shared_ptr<c_bayou_game_visualizer> m_visualizer;
 		std::vector<uint32_t> m_handled_actions;
+		std::weak_ptr<c_game_piece> m_selected_piece;
 	};
 }

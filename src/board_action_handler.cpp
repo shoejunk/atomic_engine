@@ -4,10 +4,8 @@ namespace atom
 {
 	c_board_action_handler::c_board_action_handler(
 		std::shared_ptr<c_bayou_game_state> game_state,
-		std::shared_ptr<c_game_piece> player_piece,
 		std::shared_ptr<c_bayou_game_visualizer> visualizer)
 		: m_game_state(game_state)
-		, m_player_piece(player_piece)
 		, m_visualizer(visualizer)
 	{
 		register_aspect<i_action_handler>(this);
@@ -24,8 +22,14 @@ namespace atom
 			return false;
 		}
 		
-		uint8_t current_x = m_player_piece->get_board_x();
-		uint8_t current_y = m_player_piece->get_board_y();
+		auto selected_piece = m_selected_piece.lock();
+		if (!selected_piece)
+		{
+			return false;
+		}
+
+		uint8_t current_x = selected_piece->get_board_x();
+		uint8_t current_y = selected_piece->get_board_y();
 		uint8_t new_x = current_x;
 		uint8_t new_y = current_y;
 		
@@ -48,12 +52,12 @@ namespace atom
 		else if (action_hash == SELECT)
 		{
 			// For now, just log the current position
-			debugln("Player selected at position ({}, {})", current_x, current_y);
+			debugln("Selecting piece at position ({}, {})", current_x, current_y);
 			return true;
 		}
 		
-		// Try to move the player piece
-		if (m_game_state->move_piece(m_player_piece, new_x, new_y))
+		// Try to move the selected piece
+		if (m_game_state->move_piece(selected_piece, new_x, new_y))
 		{
 			// Update the visualization
 			m_visualizer->update_visualization();

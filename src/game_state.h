@@ -1,7 +1,9 @@
 #pragma once
+#include "army.h"
 #include "atom.h"
 #include "game_board_position.h"
 #include "game_piece.h"
+
 #include <array>
 #include <memory>
 #include <cstdint>
@@ -38,20 +40,7 @@ namespace atom
 		static constexpr uint8_t BOARD_WIDTH = 8;
 		static constexpr uint8_t BOARD_HEIGHT = 8;
 
-		c_bayou_game_state()
-		{
-			// Clear the board
-			for (int x = 0; x < BOARD_WIDTH; x++)
-			{
-				for (int y = 0; y < BOARD_HEIGHT; y++)
-				{
-					m_board[x][y].reset();
-				}
-			}
-
-			// Register aspects
-			register_aspect<i_game_state>(this);
-		}
+		c_bayou_game_state();
 
 		// Get aspect types
 		std::vector<uint32_t> get_aspect_types() const override
@@ -181,5 +170,6 @@ namespace atom
 
 	private:
 		std::array<std::array<std::shared_ptr<c_atom>, BOARD_HEIGHT>, BOARD_WIDTH> m_board;
+		std::array<c_army, 2> m_armies;
 	};
 }

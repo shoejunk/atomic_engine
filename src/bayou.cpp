@@ -3,7 +3,6 @@
 #include "input_binding_registrar.h"
 #include "input_manager.h"
 #include "menu_action_handler.h"
-#include "player.h"
 #include "texture.h"
 #include "sprite.h"
 #include "utility.h"
@@ -63,32 +62,20 @@ namespace atom
 		// Start with gameplay context active
 		input_manager->push_context(GAMEPLAY_CONTEXT);
 
-		// Create some game pieces
-		std::vector<std::shared_ptr<c_game_piece>> game_pieces;
+		// Create some game pieces for army 0
+		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 0, 3, 3));
+		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 0, 2, 2));
 		
-		// Add a "player" piece
-		auto player_piece = std::make_shared<c_game_piece>(*piece_texture, "player", 3, 3);
-		game_pieces.push_back(player_piece);
-		game_state->add_piece(player_piece);
-		
-		// Add some obstacle pieces
-		auto obstacle1 = std::make_shared<c_game_piece>(*piece_texture, "obstacle", 1, 1);
-		game_pieces.push_back(obstacle1);
-		game_state->add_piece(obstacle1);
-		
-		auto obstacle2 = std::make_shared<c_game_piece>(*piece_texture, "obstacle", 5, 5);
-		game_pieces.push_back(obstacle2);
-		game_state->add_piece(obstacle2);
-		
-		auto obstacle3 = std::make_shared<c_game_piece>(*piece_texture, "obstacle", 2, 6);
-		game_pieces.push_back(obstacle3);
-		game_state->add_piece(obstacle3);
+		// Create some game pieces for army 1
+		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 4, 6));
+		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 6, 6));
+		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 3, 7));
 
 		// Update the visualization
 		game_visualizer->update_visualization();
 		
 		// Create and connect the action handler
-		auto board_action_handler = std::make_shared<c_board_action_handler>(game_state, player_piece, game_visualizer);
+		auto board_action_handler = std::make_shared<c_board_action_handler>(game_state, game_visualizer);
 		input_manager->add_connection<i_action_handler>(board_action_handler);
 
 		// Create the game loop and start
