@@ -1,5 +1,11 @@
 #include "bayou.h"
+#include "board_action_handler.h"
+#include "bayou_state.h"
+#include "bayou_texture_bank.h"
+
 #include "game_loop.h"
+#include "game_piece.h"
+#include "game_state_visualizer.h"
 #include "input_binding_registrar.h"
 #include "input_manager.h"
 #include "menu_action_handler.h"
@@ -7,10 +13,6 @@
 #include "sprite.h"
 #include "utility.h"
 #include "window.h"
-#include "bayou_state.h"
-#include "game_state_visualizer.h"
-#include "game_piece.h"
-#include "board_action_handler.h"
 
 namespace atom
 {
@@ -19,9 +21,8 @@ namespace atom
 		// Create main game objects
 		auto window = std::make_unique<c_window>("Bayou Game", 1280, 1024);
 		
-		// Load textures
-		auto piece_texture = std::make_unique<c_texture>("assets/tinkeringTom_blue.png");
-		auto terrain_texture = std::make_unique<c_texture>("assets/terrain.png");
+		// Create the texture bank
+		c_bayou_texture_bank texture_bank;
 		
 		// Set up input system
 		auto input_manager = std::make_shared<c_input_manager>();
@@ -63,13 +64,13 @@ namespace atom
 		input_manager->push_context(GAMEPLAY_CONTEXT);
 
 		// Create some game pieces for army 0
-		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 0, 3, 3));
-		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 0, 2, 2));
+		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 0, 3, 3));
+		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 0, 2, 2));
 		
 		// Create some game pieces for army 1
-		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 4, 6));
-		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 6, 6));
-		game_state->add_piece(std::make_shared<c_game_piece>(*piece_texture, "tinkering_tom"_h, 3, 7));
+		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 4, 6));
+		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 6, 6));
+		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 3, 7));
 
 		// Update the visualization
 		game_visualizer->update_visualization();
