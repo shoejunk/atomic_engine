@@ -1,7 +1,7 @@
 #pragma once
 #include "atom.h"
 #include "drawable.h"
-#include "game_state.h"
+#include "bayou_state.h"
 #include "game_board_position.h"
 #include "drawable_group.h"
 #include <SFML/Graphics.hpp>
@@ -29,7 +29,7 @@ namespace atom
 	class c_bayou_game_visualizer : public c_atom, public i_drawable, public i_game_visualizer
 	{
 	public:
-		c_bayou_game_visualizer(std::shared_ptr<c_bayou_game_state> game_state)
+		c_bayou_game_visualizer(std::shared_ptr<c_bayou_state> game_state)
 			: m_game_state(game_state)
 			, m_cell_size(96)
 			, m_board_x(50)
@@ -111,7 +111,7 @@ namespace atom
 		}
 
 	private:
-		std::shared_ptr<c_bayou_game_state> m_game_state;
+		std::shared_ptr<c_bayou_state> m_game_state;
 		uint32_t m_cell_size;
 		uint32_t m_board_x;
 		uint32_t m_board_y;

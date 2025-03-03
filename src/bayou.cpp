@@ -7,7 +7,7 @@
 #include "sprite.h"
 #include "utility.h"
 #include "window.h"
-#include "game_state.h"
+#include "bayou_state.h"
 #include "game_state_visualizer.h"
 #include "game_piece.h"
 #include "board_action_handler.h"
@@ -35,7 +35,7 @@ namespace atom
 		input_manager->add_child(std::move(registrar));
 
 		// Create game state
-		auto game_state = std::make_shared<c_bayou_game_state>();
+		auto game_state = std::make_shared<c_bayou_state>();
 		
 		// Create game visualizer
 		auto game_visualizer = std::make_shared<c_bayou_game_visualizer>(game_state);

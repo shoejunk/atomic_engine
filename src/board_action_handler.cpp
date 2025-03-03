@@ -3,7 +3,7 @@
 namespace atom
 {
 	c_board_action_handler::c_board_action_handler(
-		std::shared_ptr<c_bayou_game_state> game_state,
+		std::shared_ptr<c_bayou_state> game_state,
 		std::shared_ptr<c_bayou_game_visualizer> visualizer)
 		: m_game_state(game_state)
 		, m_visualizer(visualizer)
