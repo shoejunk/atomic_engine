@@ -1,4 +1,5 @@
 #include "board_action_handler.h"
+#include "screen_position_action.h"
 
 namespace atom
 {
@@ -23,7 +24,22 @@ namespace atom
 		{
 			return false;
 		}
-		
+
+		if (action_hash == SELECT)
+		{
+			// Use the const version of as<> method
+			auto* position_action = action.as<c_screen_position_action>();
+			if (position_action != nullptr)
+			{
+				// Convert screen position to board position
+				s_vector2u8 board_pos = m_visualizer->screen_to_board_position(position_action->get_position());
+				
+				// Use the board position for game logic
+				// For example, select a piece at this position
+				// This is just a placeholder for the actual game logic
+			}
+		}
+
 		auto selected_piece = m_selected_piece.lock();
 		if (!selected_piece)
 		{
@@ -50,12 +66,6 @@ namespace atom
 		else if (action_hash == MOVE_DOWN)
 		{
 			new_y = current_y + 1;
-		}
-		else if (action_hash == SELECT)
-		{
-			// For now, just log the current position
-			debugln("Selecting piece at position ({}, {})", current_x, current_y);
-			return true;
 		}
 		
 		// Try to move the selected piece

@@ -52,7 +52,7 @@ namespace atom
 			{
 				if (event.type == sf::Event::MouseButtonPressed)
 				{
-					c_screen_position_action action(binding->get_action_hash(), s_vector2i{ event.mouseButton.x, event.mouseButton.y });
+					c_screen_position_action action(binding->get_action_hash(), s_vector2i32{ event.mouseButton.x, event.mouseButton.y });
 					trigger_action(action, handlers);
 				}
 				else

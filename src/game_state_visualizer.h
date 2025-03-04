@@ -6,6 +6,7 @@
 #include "drawable_group.h"
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <algorithm>
 
 namespace atom
 {
@@ -50,6 +51,20 @@ namespace atom
 				i_drawable::type(),
 				i_game_visualizer::type()
 			};
+		}
+
+		// Convert screen position to board position
+		s_vector2u8 screen_to_board_position(const s_vector2i32& screen_pos) const
+		{
+			// Calculate board coordinates from screen coordinates
+			int32_t board_x = (screen_pos.x - m_board_x) / m_cell_size;
+			int32_t board_y = (screen_pos.y - m_board_y) / m_cell_size;
+			
+			// Clamp to valid board coordinates
+			board_x = std::max(0, std::min(board_x, static_cast<int32_t>(m_game_state->get_board_width() - 1)));
+			board_y = std::max(0, std::min(board_y, static_cast<int32_t>(m_game_state->get_board_height() - 1)));
+			
+			return {static_cast<uint8_t>(board_x), static_cast<uint8_t>(board_y)};
 		}
 
 		// Implement i_drawable

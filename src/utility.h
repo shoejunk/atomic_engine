@@ -179,9 +179,13 @@ namespace atom
     extern c_logger<true, false, false, std::cerr> error;
     extern c_logger<true, true, false, std::cerr> errorln;
 
-	struct s_vector2i
+	template <typename T>
+	struct t_vector2
 	{
-		int32_t x;
-		int32_t y;
+		T x;
+		T y;
 	};
+
+	using s_vector2i32 = t_vector2<int32_t>;
+	using s_vector2u8 = t_vector2<uint8_t>;
 }

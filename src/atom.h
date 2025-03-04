@@ -70,6 +70,18 @@ namespace atom
 			return nullptr;
 		}
 
+		template<typename AspectType>
+		const AspectType* as() const
+		{
+			auto it = m_aspects.find(AspectType::type());
+			if (it != m_aspects.end())
+			{
+				return dynamic_cast<const AspectType*>(it->second);
+			}
+
+			return nullptr;
+		}
+
 		// Aspect management
 		template<typename AspectType>
 		void register_aspect(c_atom* atom)
