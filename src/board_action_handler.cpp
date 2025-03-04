@@ -3,11 +3,7 @@
 
 namespace atom
 {
-	c_board_action_handler::c_board_action_handler(
-		std::shared_ptr<c_bayou_state> game_state,
-		std::shared_ptr<c_bayou_game_visualizer> visualizer)
-		: m_game_state(game_state)
-		, m_visualizer(visualizer)
+	c_board_action_handler::c_board_action_handler()
 	{
 		register_aspect<i_action_handler>(this);
 		
@@ -25,6 +21,7 @@ namespace atom
 			return false;
 		}
 
+		auto game_state = get_parent()->as<c_bayou_state>();
 		if (action_hash == SELECT)
 		{
 			// Use the const version of as<> method

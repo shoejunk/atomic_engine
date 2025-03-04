@@ -38,12 +38,14 @@ namespace atom
 		auto game_state = std::make_shared<c_bayou_state>();
 		
 		// Create game visualizer
-		auto game_visualizer = std::make_shared<c_bayou_game_visualizer>(game_state);
+		auto game_visualizer = std::make_unique<c_bayou_game_visualizer>(game_state);
 		game_visualizer->set_cell_size(96);
 		game_visualizer->set_board_position(224, 160);
+		auto game_visualizer_ptr = game_visualizer.get();
+		game_state->add_child(std::move(game_visualizer));
 
 		// Connect visualizer to window for rendering
-		window->add_connection<i_drawable>(game_visualizer);
+		window->add_connection<i_drawable>(game_state);
 
 		// Register bindings for gameplay context
 		static constexpr uint32_t GAMEPLAY_CONTEXT = "gameplay"_h;
@@ -72,11 +74,14 @@ namespace atom
 		game_state->add_piece(std::make_shared<c_game_piece>(*texture_bank.get_texture("tinkeringTom_blue"_h), "tinkering_tom"_h, 3, 7));
 
 		// Update the visualization
-		game_visualizer->update_visualization();
+		game_visualizer_ptr->update_visualization();
 		
 		// Create and connect the action handler
-		auto board_action_handler = std::make_shared<c_board_action_handler>(game_state, game_visualizer);
-		input_manager->add_connection<i_action_handler>(board_action_handler);
+		auto board_action_handler = std::make_unique<c_board_action_handler>();
+		auto board_action_handler_ptr = board_action_handler.get();
+		game_state->add_child(std::move(board_action_handler));
+
+		input_manager->add_connection<i_action_handler>(game_state);
 
 		// Create the game loop and start
 		auto game_loop = std::make_unique<c_game_loop>();

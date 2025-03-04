@@ -101,11 +101,11 @@ namespace atom
 		}
 
 	protected:
-		c_atom* m_parent = nullptr;
 		std::vector<std::unique_ptr<c_atom>> m_children;
 		std::unordered_map<uint32_t, std::vector<std::weak_ptr<c_atom>>> m_connections;
 
 	private:
 		std::unordered_map<uint32_t, c_atom*> m_aspects;
+		c_atom* m_parent = nullptr;
 	};
 } // namespace atom
