@@ -33,10 +33,8 @@ namespace atom
 			{
 				// Convert screen position to board position
 				s_vector2u8 board_pos = m_visualizer->screen_to_board_position(position_action->get_position());
-				
-				// Use the board position for game logic
-				// For example, select a piece at this position
-				// This is just a placeholder for the actual game logic
+				m_selected_piece = m_game_state->get_piece_at(board_pos.x, board_pos.y);
+				return true;
 			}
 		}
 
@@ -46,8 +44,14 @@ namespace atom
 			return false;
 		}
 
-		uint8_t current_x = selected_piece->get_board_x();
-		uint8_t current_y = selected_piece->get_board_y();
+		auto board_position = selected_piece->as<i_board_position>();
+		if (!board_position)
+		{
+			return false;
+		}
+
+		uint8_t current_x = board_position->get_board_x();
+		uint8_t current_y = board_position->get_board_y();
 		uint8_t new_x = current_x;
 		uint8_t new_y = current_y;
 		

@@ -28,7 +28,7 @@ namespace atom
 			return { c_bayou_state::type() };
 		}
 
-		std::shared_ptr<c_atom> get_piece_at(uint8_t x, uint8_t y) const
+		std::shared_ptr<c_atom> get_piece_at(uint8_t x, uint8_t y)
 		{
 			if (x >= BOARD_WIDTH || y >= BOARD_HEIGHT)
 			{
