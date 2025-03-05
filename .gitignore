@@ -36,3 +36,5 @@ install_manifest.txt
 .DS_Store
 Thumbs.db
 build_output.txt
+project_structure.txt
+project_dump.txt
