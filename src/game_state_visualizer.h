@@ -10,25 +10,12 @@
 
 namespace atom
 {
-	// Game board visualizer aspect
-	class i_game_visualizer
+	// Bayou game state visualizer
+	class c_bayou_game_visualizer : public c_atom, public i_drawable
 	{
 	public:
-		static constexpr uint32_t type() { return "game_visualizer"_h; }
+		static constexpr uint32_t type() { return "bayou_game_visualizer"_h; }
 
-		// Update the visualization
-		virtual void update_visualization() = 0;
-
-		// Set the cell size in pixels
-		virtual void set_cell_size(uint32_t size) = 0;
-
-		// Set board position (top-left corner)
-		virtual void set_board_position(uint32_t x, uint32_t y) = 0;
-	};
-
-	// Bayou game state visualizer
-	class c_bayou_game_visualizer : public c_atom, public i_drawable, public i_game_visualizer
-	{
 	public:
 		c_bayou_game_visualizer(std::shared_ptr<c_bayou_state> game_state)
 			: m_game_state(game_state)
@@ -41,7 +28,7 @@ namespace atom
 
 			// Register aspects
 			register_aspect<i_drawable>(this);
-			register_aspect<i_game_visualizer>(this);
+			register_aspect<c_bayou_game_visualizer>(this);
 		}
 
 		// Get aspect types
@@ -49,7 +36,7 @@ namespace atom
 		{
 			return {
 				i_drawable::type(),
-				i_game_visualizer::type()
+				c_bayou_game_visualizer::type()
 			};
 		}
 
@@ -73,8 +60,7 @@ namespace atom
 			return m_drawable_group;
 		}
 
-		// Implement i_game_visualizer
-		void update_visualization() override
+		void update_visualization()
 		{
 			// Clear pieces (but keep grid)
 			// The previous approach caused an infinite loop because popTransform() affects m_transform_stack
@@ -112,13 +98,13 @@ namespace atom
 			}
 		}
 
-		void set_cell_size(uint32_t size) override
+		void set_cell_size(uint32_t size)
 		{
 			m_cell_size = static_cast<uint32_t>(size);
 			initialize_grid();
 		}
 
-		void set_board_position(uint32_t x, uint32_t y) override
+		void set_board_position(uint32_t x, uint32_t y)
 		{
 			m_board_x = x;
 			m_board_y = y;
