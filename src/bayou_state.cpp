@@ -19,6 +19,7 @@ namespace atom
 
 		// Register aspects
 		register_aspect<c_bayou_state>(this);
+		register_aspect<i_board_state>(this);
 	}
 
 	bool c_bayou_state::add_piece(std::shared_ptr<c_atom> piece)

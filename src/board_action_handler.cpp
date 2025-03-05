@@ -1,6 +1,5 @@
-#include "bayou_state.h"
-
 #include "board_action_handler.h"
+#include "board_state.h"
 #include "game_state_visualizer.h"
 #include "screen_position_action.h"
 
@@ -24,8 +23,8 @@ namespace atom
 			return false;
 		}
 
-		auto game_state = as<c_bayou_state>();
-		if (!game_state)
+		auto board_state = as<i_board_state>();
+		if (!board_state)
 		{
 			return false;
 		}
@@ -44,7 +43,7 @@ namespace atom
 			{
 				// Convert screen position to board position
 				s_vector2u8 board_pos = visualizer->screen_to_board_position(position_action->get_position());
-				m_selected_piece = game_state->get_piece_at(board_pos.x, board_pos.y);
+				m_selected_piece = board_state->get_piece_at(board_pos.x, board_pos.y);
 				return true;
 			}
 		}
@@ -84,7 +83,7 @@ namespace atom
 		}
 		
 		// Try to move the selected piece
-		if (game_state->move_piece(selected_piece, new_x, new_y))
+		if (board_state->move_piece(selected_piece, new_x, new_y))
 		{
 			// Update the visualization
 			visualizer->update_visualization();
