@@ -11,7 +11,7 @@ namespace atom
 	)
 	{
 		// Get the input manager
-		auto* input_manager = get_parent()->as<c_input_manager>();
+		auto* input_manager = as<c_input_manager>();
 		if (!input_manager)
 		{
 			return;
@@ -38,7 +38,7 @@ namespace atom
 	)
 	{
 		// Get the input manager
-		auto* input_manager = get_parent()->as<c_input_manager>();
+		auto* input_manager = as<c_input_manager>();
 		if (!input_manager)
 		{
 			return;
@@ -64,7 +64,7 @@ namespace atom
 	)
 	{
 		// Get the input manager
-		auto* input_manager = get_parent()->as<c_input_manager>();
+		auto* input_manager = as<c_input_manager>();
 		if (!input_manager)
 		{
 			return;
@@ -91,7 +91,7 @@ namespace atom
 	)
 	{
 		// Get the input manager
-		auto* input_manager = get_parent()->as<c_input_manager>();
+		auto* input_manager = as<c_input_manager>();
 		if (!input_manager)
 		{
 			return;
@@ -120,7 +120,7 @@ namespace atom
 	)
 	{
 		// Get the input manager
-		auto* input_manager = get_parent()->as<c_input_manager>();
+		auto* input_manager = as<c_input_manager>();
 		if (!input_manager)
 		{
 			return;

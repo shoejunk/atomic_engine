@@ -23,7 +23,13 @@ namespace atom
 			auto input_managers = get_connections<i_input_manager>();
 			for (auto& atom : input_managers)
 			{
-				if (auto input_manager = atom->as<i_input_manager>())
+				auto atom_ptr = atom.lock();
+				if (!atom_ptr)
+				{
+					continue;
+				}
+
+				if (auto input_manager = atom_ptr->as<i_input_manager>())
 				{
 					input_manager->process_event(event);
 				}
@@ -38,7 +44,13 @@ namespace atom
 		auto drawable_connections = get_connections<i_drawable>();
 		for (auto& atom : drawable_connections)
 		{
-			if (auto drawable = atom->as<i_drawable>())
+			auto atom_ptr = atom.lock();
+			if (!atom_ptr)
+			{
+				continue;
+			}
+
+			if (auto drawable = atom_ptr->as<i_drawable>())
 			{
 				m_window.draw(drawable->get_drawable());
 			}

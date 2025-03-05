@@ -49,17 +49,10 @@ namespace atom
 				return false;
 			}
 
-			// Get parent
-			auto parent = get_parent();
-			if (!parent)
-			{
-				return false;
-			}
-
 			// Handle different actions using aspects
 			if (action_hash == "move_left"_h)
 			{
-				if (auto movable = parent->as<i_movable>())
+				if (auto movable = as<i_movable>())
 				{
 					movable->move(-5.0f, 0.0f);
 					return true;
@@ -67,7 +60,7 @@ namespace atom
 			}
 			else if (action_hash == "move_right"_h)
 			{
-				if (auto movable = parent->as<i_movable>())
+				if (auto movable = as<i_movable>())
 				{
 					movable->move(5.0f, 0.0f);
 					return true;
@@ -75,7 +68,7 @@ namespace atom
 			}
 			else if (action_hash == "move_up"_h)
 			{
-				if (auto movable = parent->as<i_movable>())
+				if (auto movable = as<i_movable>())
 				{
 					movable->move(0.0f, -5.0f);
 					return true;
@@ -83,7 +76,7 @@ namespace atom
 			}
 			else if (action_hash == "move_down"_h)
 			{
-				if (auto movable = parent->as<i_movable>())
+				if (auto movable = as<i_movable>())
 				{
 					movable->move(0.0f, 5.0f);
 					return true;
@@ -92,7 +85,7 @@ namespace atom
 			else if (action_hash == "jump"_h)
 			{
 				// Try to use the jumpable aspect if available
-				if (auto jumpable = parent->as<i_jumpable>())
+				if (auto jumpable = as<i_jumpable>())
 				{
 					jumpable->jump();
 					return true;

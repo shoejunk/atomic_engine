@@ -24,13 +24,13 @@ namespace atom
 			return false;
 		}
 
-		auto game_state = get_parent()->as<c_bayou_state>();
+		auto game_state = as<c_bayou_state>();
 		if (!game_state)
 		{
 			return false;
 		}
 
-		auto visualizer = get_parent()->as<c_bayou_game_visualizer>();
+		auto visualizer = as<c_bayou_game_visualizer>();
 		if (!visualizer)
 		{
 			return false;

@@ -23,14 +23,11 @@ namespace atom
 		// Move by a given delta
 		void move(float dx, float dy) override
 		{
-			// Get the sprite from the parent
-			if (auto parent = get_parent())
+			// Get the sprite aspect
+			if (auto sprite = as<c_sprite>())
 			{
-				if (auto sprite = parent->as<c_sprite>())
-				{
-					sf::Vector2f pos = sprite->get_position();
-					sprite->set_position(pos.x + dx, pos.y + dy);
-				}
+				sf::Vector2f pos = sprite->get_position();
+				sprite->set_position(pos.x + dx, pos.y + dy);
 			}
 		}
 	};

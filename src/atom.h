@@ -39,19 +39,9 @@ namespace atom
 		}
 
 		template<typename AspectType>
-		std::vector<std::shared_ptr<c_atom>> get_connections()
+		std::vector<std::weak_ptr<c_atom>>& get_connections()
 		{
-			std::vector<std::shared_ptr<c_atom>> result;
-			
-			auto& connections = m_connections[AspectType::type()];
-			for (auto& connection : connections)
-			{
-				if (auto ptr = connection.lock()) {
-					result.push_back(ptr);
-				}
-			}
-			
-			return result;
+			return m_connections[AspectType::type()];
 		}
 
 		// Parent management
@@ -61,25 +51,35 @@ namespace atom
 		template<typename AspectType>
 		AspectType* as()
 		{
-			auto it = m_aspects.find(AspectType::type());
-			if (it != m_aspects.end())
+			if (m_parent == nullptr)
 			{
-				return dynamic_cast<AspectType*>(it->second);
+				return internal_as<AspectType>();
 			}
-
-			return nullptr;
+			else if (auto res = m_parent->internal_as<AspectType>())
+			{
+				return res;
+			}
+			else
+			{
+				return internal_as<AspectType>();;
+			}
 		}
 
 		template<typename AspectType>
 		const AspectType* as() const
 		{
-			auto it = m_aspects.find(AspectType::type());
-			if (it != m_aspects.end())
+			if (m_parent == nullptr)
 			{
-				return dynamic_cast<const AspectType*>(it->second);
+				return internal_as<AspectType>();
 			}
-
-			return nullptr;
+			else if (auto res = m_parent->internal_as<AspectType>())
+			{
+				return res;
+			}
+			else
+			{
+				return internal_as<AspectType>();;
+			}
 		}
 
 		// Aspect management
@@ -98,6 +98,31 @@ namespace atom
 		bool has(uint32_t aspect_type) const
 		{
 			return m_aspects.find(aspect_type) != m_aspects.end();
+		}
+
+	protected:
+		template<typename AspectType>
+		const AspectType* internal_as() const
+		{
+			auto it = m_aspects.find(AspectType::type());
+			if (it != m_aspects.end())
+			{
+				return dynamic_cast<const AspectType*>(it->second);
+			}
+
+			return nullptr;
+		}
+
+		template<typename AspectType>
+		AspectType* internal_as()
+		{
+			auto it = m_aspects.find(AspectType::type());
+			if (it != m_aspects.end())
+			{
+				return dynamic_cast<AspectType*>(it->second);
+			}
+
+			return nullptr;
 		}
 
 	protected:
