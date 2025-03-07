@@ -11,8 +11,16 @@
 namespace atom
 {
 	// Game piece class - represents an entity that can be placed on the board
-	class c_game_piece : public c_atom, public i_board_position, public i_drawable, public i_army_ownable
+	class c_game_piece
+		: public c_atom
+		, public i_board_position
+		, public i_drawable
+		, public i_army_ownable
+		, public i_movable
 	{
+	public:
+		static consteval uint32_t type() { return "game_piece"_h; }
+
 	public:
 		c_game_piece(const c_texture& texture, uint32_t piece_type, uint8_t army_idx, uint8_t board_x = 0, uint8_t board_y = 0)
 			: m_piece_type(piece_type)
@@ -26,16 +34,22 @@ namespace atom
 			m_sprite->set_scale(0.35f, 0.35f);
 			
 			// Register aspects
+			register_aspect<c_game_piece>(this);
 			register_aspect<i_board_position>(this);
 			register_aspect<i_drawable>(this);
+			register_aspect<i_army_ownable>(this);
+			register_aspect<i_movable>(this);
 		}
 
 		// Override get_aspect_types
 		std::vector<uint32_t> get_aspect_types() const override
 		{
 			return {
+				c_game_piece::type(),
 				i_board_position::type(),
-				i_drawable::type()
+				i_drawable::type(),
+				i_army_ownable::type(),
+				i_movable::type()
 			};
 		}
 
@@ -54,6 +68,11 @@ namespace atom
 
 		// Implement i_army_ownable
 		uint8_t get_army_idx() const override { return m_army_idx; }
+
+		// Implement i_movable
+		virtual sf::Vector2f get_position() const { return m_sprite->get_position(); }
+		virtual void set_position(float x, float y) { m_sprite->set_position(x, y); }
+		virtual void move(float dx, float dy) { m_sprite->move(dx, dy); }
 
 		// Get piece type
 		const uint32_t get_piece_type() const { return m_piece_type; }

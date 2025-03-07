@@ -98,6 +98,18 @@ namespace atom
 			}
 		}
 
+		void update_visualization_with_dragged_piece(std::shared_ptr<c_atom> dragged_piece, float x, float y)
+		{
+			// First update the normal visualization (without the dragged piece)
+			update_visualization();
+			
+			// Then add the dragged piece at its current position
+			if (auto drawable = dragged_piece->as<i_drawable>())
+			{
+				add_dragged_piece(drawable, x, y);
+			}
+		}
+
 		void set_cell_size(uint32_t size)
 		{
 			m_cell_size = static_cast<uint32_t>(size);
@@ -115,6 +127,17 @@ namespace atom
 		uint32_t get_board_x() const { return m_board_x; }
 		uint32_t get_board_y() const { return m_board_y; }
 		uint32_t get_cell_size() const { return m_cell_size; }
+
+		// Add a piece that's being dragged to the drawable group
+		void add_dragged_piece(i_drawable* drawable, float x, float y)
+		{
+			// Add transform for this piece
+			sf::Transform transform;
+			transform.translate(x, y);
+			m_drawable_group.pushTransform(transform);
+			m_drawable_group.draw(drawable->get_drawable());
+			m_drawable_group.popTransform();
+		}
 
 	private:
 		std::shared_ptr<c_bayou_state> m_game_state;

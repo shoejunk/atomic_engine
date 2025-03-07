@@ -43,5 +43,6 @@ namespace atom
 		std::weak_ptr<c_atom> m_selected_piece;
 		std::weak_ptr<c_atom> m_dragged_piece;
 		s_vector2i32 m_drag_offset;
+		s_vector2u8 m_original_board_pos; // Store the original board position for drag-and-drop operations
 	};
 }

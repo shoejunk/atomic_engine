@@ -60,65 +60,114 @@ namespace atom
 		{
 			// Convert screen position to board position
 			s_vector2u8 board_pos = visualizer->screen_to_board_position(position_action->get_position());
-			m_dragged_piece = board_state->get_piece_at(board_pos.x, board_pos.y);
+			auto piece = board_state->get_piece_at(board_pos.x, board_pos.y);
 			
-			if (auto piece = m_dragged_piece.lock())
+			if (piece)
 			{
-				if (auto board_position = piece->as<i_board_position>())
+				// Get the piece's board position
+				auto board_position = piece->as<i_board_position>();
+				if (!board_position)
 				{
-					// Calculate screen position for the piece
-					float screen_x = visualizer->get_board_x() + board_position->get_board_x() * visualizer->get_cell_size() + visualizer->get_cell_size() / 2.0f;
-					float screen_y = visualizer->get_board_y() + board_position->get_board_y() * visualizer->get_cell_size() + visualizer->get_cell_size() / 2.0f;
-					
-					// Store the offset between piece position and click position
-					auto click_pos = position_action->get_position();
-					m_drag_offset = {
-						static_cast<int32_t>(click_pos.x - screen_x),
-						static_cast<int32_t>(click_pos.y - screen_y)
-					};
-					return true;
+					return false;
 				}
+				
+				// Calculate the screen position for the center of the cell
+				float center_x = visualizer->get_board_x() + board_pos.x * visualizer->get_cell_size() + visualizer->get_cell_size() / 2.0f;
+				float center_y = visualizer->get_board_y() + board_pos.y * visualizer->get_cell_size() + visualizer->get_cell_size() / 2.0f;
+				
+				// Get the click position
+				auto click_pos = position_action->get_position();
+				
+				// Calculate the offset from the cell center to the click position
+				m_drag_offset = {
+					static_cast<int32_t>(click_pos.x - center_x),
+					static_cast<int32_t>(click_pos.y - center_y)
+				};
+				
+				// Debug output
+				printf("DRAG_START - Cell center: %.1f, %.1f\n", center_x, center_y);
+				printf("DRAG_START - Click position: %d, %d\n", click_pos.x, click_pos.y);
+				printf("DRAG_START - Drag offset: %d, %d\n", m_drag_offset.x, m_drag_offset.y);
+				
+				// Store the piece being dragged and its original position
+				m_dragged_piece = piece;
+				m_original_board_pos = board_pos;
+				
+				return true;
 			}
+			return false;
 		}
 		else if (action_hash == DRAG)
 		{
 			if (auto piece = m_dragged_piece.lock())
 			{
-				if (auto movable = piece->as<i_movable>())
-				{
-					// Update sprite position for visual feedback during drag
-					auto pos = position_action->get_position();
-					movable->set_position(
-						static_cast<float>(pos.x - m_drag_offset.x),
-						static_cast<float>(pos.y - m_drag_offset.y)
-					);
-					return true;
-				}
+				// Get the current mouse position
+				auto mouse_position = position_action->get_position();
+				
+				// Debug output for drag position
+				printf("Drag position: %d, %d\n", mouse_position.x, mouse_position.y);
+				printf("Applying offset: %d, %d\n", m_drag_offset.x, m_drag_offset.y);
+				
+				// Calculate the new position by accounting for the drag offset
+				float new_x = static_cast<float>(mouse_position.x - m_drag_offset.x);
+				float new_y = static_cast<float>(mouse_position.y - m_drag_offset.y);
+				
+				printf("New position: %.1f, %.1f\n", new_x, new_y);
+				
+				// Update visualization with the dragged piece at the new position
+				visualizer->update_visualization_with_dragged_piece(piece, new_x, new_y);
+				
+				return true;
 			}
 		}
 		else if (action_hash == DROP)
 		{
 			if (auto piece = m_dragged_piece.lock())
 			{
-				if (auto board_position = piece->as<i_board_position>())
+				// Get the current mouse position
+				auto mouse_position = position_action->get_position();
+				
+				// Calculate the position with offset
+				float piece_x = static_cast<float>(mouse_position.x - m_drag_offset.x);
+				float piece_y = static_cast<float>(mouse_position.y - m_drag_offset.y);
+				
+				// Debug output
+				printf("DROP - Piece position: %.1f, %.1f\n", piece_x, piece_y);
+				
+				// Calculate the relative position within the board grid
+				float rel_x = piece_x - visualizer->get_board_x();
+				float rel_y = piece_y - visualizer->get_board_y();
+				
+				// Calculate the cell coordinates (floored to get the cell index)
+				int32_t cell_x = static_cast<int32_t>(rel_x / visualizer->get_cell_size());
+				int32_t cell_y = static_cast<int32_t>(rel_y / visualizer->get_cell_size());
+				
+				// Clamp to valid board coordinates
+				cell_x = std::max(0, std::min(cell_x, static_cast<int32_t>(board_state->get_board_width() - 1)));
+				cell_y = std::max(0, std::min(cell_y, static_cast<int32_t>(board_state->get_board_height() - 1)));
+				
+				// Debug output
+				printf("DROP - Calculated board position: %d, %d\n", cell_x, cell_y);
+				
+				// Try to move the piece to the new position
+				if (board_state->move_piece(piece, static_cast<uint8_t>(cell_x), static_cast<uint8_t>(cell_y)))
 				{
-					// Convert drop position to board coordinates
-					s_vector2u8 new_pos = visualizer->screen_to_board_position(position_action->get_position());
-					
-					// Try to move the piece
-					if (board_state->move_piece(piece, new_pos.x, new_pos.y))
-					{
-						visualizer->update_visualization();
-					}
-					else
-					{
-						// Move failed, reset piece position
-						visualizer->update_visualization();
-					}
-					
-					m_dragged_piece.reset();
-					return true;
+					printf("DROP - Move successful\n");
 				}
+				else
+				{
+					// Move failed, put the piece back at its original position
+					printf("DROP - Move failed, returning to original position: %d, %d\n", 
+						m_original_board_pos.x, m_original_board_pos.y);
+					board_state->move_piece(piece, m_original_board_pos.x, m_original_board_pos.y);
+				}
+				
+				// Update the visualization
+				visualizer->update_visualization();
+				
+				// Reset the dragged piece
+				m_dragged_piece.reset();
+				return true;
 			}
 		}
 		else if (action_hash == MOVE_LEFT)
