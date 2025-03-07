@@ -42,6 +42,6 @@ namespace atom
 		std::vector<uint32_t> m_handled_actions;
 		std::weak_ptr<c_atom> m_selected_piece;
 		std::weak_ptr<c_atom> m_dragged_piece;
-		s_vector2u8 m_drag_offset;
+		s_vector2i32 m_drag_offset;
 	};
 }

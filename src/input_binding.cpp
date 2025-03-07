@@ -116,6 +116,13 @@ namespace atom
 			{
 				return true;
 			}
+			else if (m_activation_type == e_activation_type::held &&
+				event.type == sf::Event::MouseMoved &&
+				sf::Mouse::isButtonPressed(m_button) &&
+				check_modifiers())
+			{
+				return true;
+			}
 		}
 		return false;
 	}

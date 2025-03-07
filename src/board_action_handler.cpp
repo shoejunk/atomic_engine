@@ -73,8 +73,8 @@ namespace atom
 					// Store the offset between piece position and click position
 					auto click_pos = position_action->get_position();
 					m_drag_offset = {
-						static_cast<uint8_t>(click_pos.x - screen_x),
-						static_cast<uint8_t>(click_pos.y - screen_y)
+						static_cast<int32_t>(click_pos.x - screen_x),
+						static_cast<int32_t>(click_pos.y - screen_y)
 					};
 					return true;
 				}
