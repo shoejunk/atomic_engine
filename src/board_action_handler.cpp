@@ -84,11 +84,6 @@ namespace atom
 					static_cast<int32_t>(click_pos.y - center_y)
 				};
 				
-				// Debug output
-				printf("DRAG_START - Cell center: %.1f, %.1f\n", center_x, center_y);
-				printf("DRAG_START - Click position: %d, %d\n", click_pos.x, click_pos.y);
-				printf("DRAG_START - Drag offset: %d, %d\n", m_drag_offset.x, m_drag_offset.y);
-				
 				// Store the piece being dragged and its original position
 				m_dragged_piece = piece;
 				m_original_board_pos = board_pos;
@@ -104,15 +99,9 @@ namespace atom
 				// Get the current mouse position
 				auto mouse_position = position_action->get_position();
 				
-				// Debug output for drag position
-				printf("Drag position: %d, %d\n", mouse_position.x, mouse_position.y);
-				printf("Applying offset: %d, %d\n", m_drag_offset.x, m_drag_offset.y);
-				
 				// Calculate the new position by accounting for the drag offset
 				float new_x = static_cast<float>(mouse_position.x - m_drag_offset.x);
 				float new_y = static_cast<float>(mouse_position.y - m_drag_offset.y);
-				
-				printf("New position: %.1f, %.1f\n", new_x, new_y);
 				
 				// Update visualization with the dragged piece at the new position
 				visualizer->update_visualization_with_dragged_piece(piece, new_x, new_y);
@@ -131,9 +120,6 @@ namespace atom
 				float piece_x = static_cast<float>(mouse_position.x - m_drag_offset.x);
 				float piece_y = static_cast<float>(mouse_position.y - m_drag_offset.y);
 				
-				// Debug output
-				printf("DROP - Piece position: %.1f, %.1f\n", piece_x, piece_y);
-				
 				// Calculate the relative position within the board grid
 				float rel_x = piece_x - visualizer->get_board_x();
 				float rel_y = piece_y - visualizer->get_board_y();
@@ -146,19 +132,10 @@ namespace atom
 				cell_x = std::max(0, std::min(cell_x, static_cast<int32_t>(board_state->get_board_width() - 1)));
 				cell_y = std::max(0, std::min(cell_y, static_cast<int32_t>(board_state->get_board_height() - 1)));
 				
-				// Debug output
-				printf("DROP - Calculated board position: %d, %d\n", cell_x, cell_y);
-				
 				// Try to move the piece to the new position
-				if (board_state->move_piece(piece, static_cast<uint8_t>(cell_x), static_cast<uint8_t>(cell_y)))
-				{
-					printf("DROP - Move successful\n");
-				}
-				else
+				if (!board_state->move_piece(piece, static_cast<uint8_t>(cell_x), static_cast<uint8_t>(cell_y)))
 				{
 					// Move failed, put the piece back at its original position
-					printf("DROP - Move failed, returning to original position: %d, %d\n", 
-						m_original_board_pos.x, m_original_board_pos.y);
 					board_state->move_piece(piece, m_original_board_pos.x, m_original_board_pos.y);
 				}
 				
