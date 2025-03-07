@@ -76,5 +76,6 @@ namespace atom
 
 		// Helper to trigger action on handlers
 		void trigger_action(c_action const& action, const std::vector<std::weak_ptr<c_atom>>& handlers) const;
+		void trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const;
 	};
 }

@@ -82,6 +82,9 @@ namespace atom
 		// Get the action hash
 		uint32_t get_action_hash() const override;
 
+		// Check if this binding is for a keyboard input
+		bool is_keyboard() const { return m_is_keyboard; }
+
 	private:
 		// For single input
 		union {

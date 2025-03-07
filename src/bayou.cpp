@@ -49,17 +49,9 @@ namespace atom
 
 		// Register bindings for gameplay context
 		static constexpr uint32_t GAMEPLAY_CONTEXT = "gameplay"_h;
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_LEFT, sf::Keyboard::A, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_RIGHT, sf::Keyboard::D, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_UP, sf::Keyboard::W, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_DOWN, sf::Keyboard::S, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::SELECT, sf::Mouse::Left, e_activation_type::pressed);
-
-		// Arrow key alternatives
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_LEFT, sf::Keyboard::Left, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_RIGHT, sf::Keyboard::Right, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_UP, sf::Keyboard::Up, e_activation_type::pressed);
-		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::MOVE_DOWN, sf::Keyboard::Down, e_activation_type::pressed);
+		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::DRAG_START, sf::Mouse::Left, e_activation_type::pressed);
+		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::DRAG, sf::Mouse::Left, e_activation_type::held);
+		registrar_ptr->register_binding(GAMEPLAY_CONTEXT, c_board_action_handler::DROP, sf::Mouse::Left, e_activation_type::released);
 
 		// Start with gameplay context active
 		input_manager->push_context(GAMEPLAY_CONTEXT);

@@ -111,6 +111,11 @@ namespace atom
 			initialize_grid();
 		}
 
+		// Getters for board position and cell size
+		uint32_t get_board_x() const { return m_board_x; }
+		uint32_t get_board_y() const { return m_board_y; }
+		uint32_t get_cell_size() const { return m_cell_size; }
+
 	private:
 		std::shared_ptr<c_bayou_state> m_game_state;
 		uint32_t m_cell_size;

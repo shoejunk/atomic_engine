@@ -50,9 +50,15 @@ namespace atom
 		{
 			if (binding->is_activated(event))
 			{
-				if (event.type == sf::Event::MouseButtonPressed)
+				if (event.type == sf::Event::MouseButtonPressed || 
+					event.type == sf::Event::MouseButtonReleased)
 				{
 					c_screen_position_action action(binding->get_action_hash(), s_vector2i32{ event.mouseButton.x, event.mouseButton.y });
+					trigger_action(action, handlers);
+				}
+				else if (event.type == sf::Event::MouseMoved)
+				{
+					c_screen_position_action action(binding->get_action_hash(), s_vector2i32{ event.mouseMove.x, event.mouseMove.y });
 					trigger_action(action, handlers);
 				}
 				else
@@ -70,7 +76,18 @@ namespace atom
 		{
 			if (binding->is_held())
 			{
-				trigger_action(binding->get_action_hash(), handlers);
+				// For held mouse actions, we need to include the current mouse position
+				if (!binding->is_keyboard())
+				{
+					sf::Vector2i mouse_pos = sf::Mouse::getPosition();
+					c_screen_position_action action(binding->get_action_hash(), s_vector2i32{ mouse_pos.x, mouse_pos.y });
+					trigger_action(action, handlers);
+				}
+				else
+				{
+					c_action action(binding->get_action_hash());
+					trigger_action(action, handlers);
+				}
 			}
 		}
 	}
@@ -99,6 +116,12 @@ namespace atom
 				action_handler->handle_action(action);
 			}
 		}
+	}
+
+	void c_input_context::trigger_action(uint32_t action_hash, const std::vector<std::weak_ptr<c_atom>>& handlers) const
+	{
+		c_action action(action_hash);
+		trigger_action(action, handlers);
 	}
 
 	uint32_t c_input_context::get_context_hash() const

@@ -19,6 +19,9 @@ namespace atom
 		static constexpr uint32_t MOVE_UP = "move_up"_h;
 		static constexpr uint32_t MOVE_DOWN = "move_down"_h;
 		static constexpr uint32_t SELECT = "select"_h;
+		static constexpr uint32_t DRAG_START = "drag_start"_h;
+		static constexpr uint32_t DRAG = "drag"_h;
+		static constexpr uint32_t DROP = "drop"_h;
 
 	public:
 		c_board_action_handler();
@@ -38,5 +41,7 @@ namespace atom
 	private:
 		std::vector<uint32_t> m_handled_actions;
 		std::weak_ptr<c_atom> m_selected_piece;
+		std::weak_ptr<c_atom> m_dragged_piece;
+		s_vector2u8 m_drag_offset;
 	};
 }
