@@ -5,10 +5,13 @@
 #include "board_state.h"
 #include "game_board_position.h"
 #include "game_piece.h"
+#include "texture.h"
 
 #include <array>
 #include <memory>
 #include <cstdint>
+#include <vector>
+#include <unordered_map>
 
 namespace atom
 {
@@ -46,8 +49,17 @@ namespace atom
 		uint8_t get_board_width() const override { return BOARD_WIDTH; }
 		uint8_t get_board_height() const override { return BOARD_HEIGHT; }
 
+		// Network-related methods
+		void clear_pieces();
+		std::vector<std::shared_ptr<c_game_piece>> get_pieces() const;
+		std::shared_ptr<c_game_piece> get_piece_by_id(uint32_t id) const;
+		void set_texture_for_piece_type(uint32_t piece_type, std::shared_ptr<c_texture> texture);
+		std::shared_ptr<c_texture> get_texture_for_piece_type(uint32_t piece_type) const;
+
 	private:
 		std::array<std::array<std::shared_ptr<c_atom>, BOARD_HEIGHT>, BOARD_WIDTH> m_board;
 		std::array<c_army, 2> m_armies;
+		std::vector<std::shared_ptr<c_game_piece>> m_pieces;
+		std::unordered_map<uint32_t, std::shared_ptr<c_texture>> m_piece_textures;
 	};
 }

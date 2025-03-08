@@ -47,6 +47,13 @@ namespace atom
 
 		// Add piece to the board
 		m_board[x][y] = piece;
+		
+		// Add to pieces list for network synchronization
+		auto game_piece = std::dynamic_pointer_cast<c_game_piece>(piece);
+		if (game_piece)
+		{
+			m_pieces.push_back(game_piece);
+		}
 
 		return true;
 	}
@@ -76,6 +83,17 @@ namespace atom
 
 		// Remove piece from the board
 		m_board[x][y].reset();
+		
+		// Remove from pieces list
+		auto game_piece = std::dynamic_pointer_cast<c_game_piece>(piece);
+		if (game_piece)
+		{
+			auto it = std::find(m_pieces.begin(), m_pieces.end(), game_piece);
+			if (it != m_pieces.end())
+			{
+				m_pieces.erase(it);
+			}
+		}
 
 		return true;
 	}
@@ -121,5 +139,52 @@ namespace atom
 		board_position->set_board_position(new_x, new_y);
 
 		return true;
+	}
+	
+	void c_bayou_state::clear_pieces()
+	{
+		// Clear the board
+		for (int x = 0; x < BOARD_WIDTH; x++)
+		{
+			for (int y = 0; y < BOARD_HEIGHT; y++)
+			{
+				m_board[x][y].reset();
+			}
+		}
+		
+		// Clear pieces list
+		m_pieces.clear();
+	}
+	
+	std::vector<std::shared_ptr<c_game_piece>> c_bayou_state::get_pieces() const
+	{
+		return m_pieces;
+	}
+	
+	std::shared_ptr<c_game_piece> c_bayou_state::get_piece_by_id(uint32_t id) const
+	{
+		for (const auto& piece : m_pieces)
+		{
+			if (piece->get_id() == id)
+			{
+				return piece;
+			}
+		}
+		return nullptr;
+	}
+	
+	void c_bayou_state::set_texture_for_piece_type(uint32_t piece_type, std::shared_ptr<c_texture> texture)
+	{
+		m_piece_textures[piece_type] = texture;
+	}
+	
+	std::shared_ptr<c_texture> c_bayou_state::get_texture_for_piece_type(uint32_t piece_type) const
+	{
+		auto it = m_piece_textures.find(piece_type);
+		if (it != m_piece_textures.end())
+		{
+			return it->second;
+		}
+		return nullptr;
 	}
 }

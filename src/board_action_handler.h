@@ -3,10 +3,12 @@
 #include "action.h"
 #include "action_handler.h"
 #include "atom.h"
+#include "network_game_manager.h"
 
 #include "utility.h"
 
 #include <vector>
+#include <memory>
 
 namespace atom
 {
@@ -38,11 +40,18 @@ namespace atom
 		
 		bool handle_action(c_action const& action) override;
 		
+		// Set the network game manager
+		void set_network_manager(std::shared_ptr<c_network_game_manager> network_manager)
+		{
+			m_network_manager = network_manager;
+		}
+		
 	private:
 		std::vector<uint32_t> m_handled_actions;
 		std::weak_ptr<c_atom> m_selected_piece;
 		std::weak_ptr<c_atom> m_dragged_piece;
 		s_vector2i32 m_drag_offset;
 		s_vector2u8 m_original_board_pos; // Store the original board position for drag-and-drop operations
+		std::shared_ptr<c_network_game_manager> m_network_manager;
 	};
 }

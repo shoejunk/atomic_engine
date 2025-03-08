@@ -7,6 +7,7 @@
 #include "texture.h"
 
 #include <string>
+#include <atomic>
 
 namespace atom
 {
@@ -27,6 +28,7 @@ namespace atom
 			, m_army_idx(army_idx)
 			, m_board_x(board_x)
 			, m_board_y(board_y)
+			, m_id(s_next_id++)
 		{
 			// Create sprite
 			m_sprite = std::make_shared<c_sprite>(texture);
@@ -75,7 +77,12 @@ namespace atom
 		virtual void move(float dx, float dy) { m_sprite->move(dx, dy); }
 
 		// Get piece type
-		const uint32_t get_piece_type() const { return m_piece_type; }
+		uint32_t get_type() const { return m_piece_type; }
+		
+		// Network-related methods
+		uint32_t get_id() const { return m_id; }
+		void set_id(uint32_t id) { m_id = id; }
+		uint32_t get_army_id() const { return m_army_idx; }
 
 	private:
 		std::shared_ptr<c_sprite> m_sprite;
@@ -83,5 +90,9 @@ namespace atom
 		uint8_t m_army_idx;
 		uint8_t m_board_x;
 		uint8_t m_board_y;
+		uint32_t m_id;
+		
+		// Static counter for generating unique IDs
+		static inline std::atomic<uint32_t> s_next_id = 1;
 	};
 }

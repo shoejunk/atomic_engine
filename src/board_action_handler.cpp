@@ -4,6 +4,8 @@
 #include "screen_position_action.h"
 #include "utility.h"
 #include "movable.h"
+#include "game_piece.h"
+#include "network_interface.h"
 
 namespace atom
 {
@@ -133,7 +135,32 @@ namespace atom
 				cell_y = std::max(0, std::min(cell_y, static_cast<int32_t>(board_state->get_board_height() - 1)));
 				
 				// Try to move the piece to the new position
-				if (!board_state->move_piece(piece, static_cast<uint8_t>(cell_x), static_cast<uint8_t>(cell_y)))
+				if (board_state->move_piece(piece, static_cast<uint8_t>(cell_x), static_cast<uint8_t>(cell_y)))
+				{
+					// Move succeeded, send network message if we're in a networked game
+					if (m_network_manager && m_network_manager->is_connected())
+					{
+						// Get the game piece
+						auto game_piece = std::dynamic_pointer_cast<c_game_piece>(piece);
+						if (game_piece)
+						{
+							// Create network message
+							s_network_message message;
+							message.type = e_message_type::MOVE_PIECE;
+							message.sender_id = m_network_manager->get_client_id();
+							
+							// Pack piece ID and new position
+							message.data.resize(sizeof(uint32_t) + sizeof(uint8_t) * 2);
+							*reinterpret_cast<uint32_t*>(message.data.data()) = game_piece->get_id();
+							*(message.data.data() + sizeof(uint32_t)) = static_cast<uint8_t>(cell_x);
+							*(message.data.data() + sizeof(uint32_t) + sizeof(uint8_t)) = static_cast<uint8_t>(cell_y);
+							
+							// Send message
+							m_network_manager->send_message(message);
+						}
+					}
+				}
+				else
 				{
 					// Move failed, put the piece back at its original position
 					board_state->move_piece(piece, m_original_board_pos.x, m_original_board_pos.y);
@@ -169,6 +196,29 @@ namespace atom
 			// Try to move the selected piece
 			if (board_state->move_piece(selected_piece, new_x, new_y))
 			{
+				// Move succeeded, send network message if we're in a networked game
+				if (m_network_manager && m_network_manager->is_connected())
+				{
+					// Get the game piece
+					auto game_piece = std::dynamic_pointer_cast<c_game_piece>(selected_piece);
+					if (game_piece)
+					{
+						// Create network message
+						s_network_message message;
+						message.type = e_message_type::MOVE_PIECE;
+						message.sender_id = m_network_manager->get_client_id();
+						
+						// Pack piece ID and new position
+						message.data.resize(sizeof(uint32_t) + sizeof(uint8_t) * 2);
+						*reinterpret_cast<uint32_t*>(message.data.data()) = game_piece->get_id();
+						*(message.data.data() + sizeof(uint32_t)) = new_x;
+						*(message.data.data() + sizeof(uint32_t) + sizeof(uint8_t)) = new_y;
+						
+						// Send message
+						m_network_manager->send_message(message);
+					}
+				}
+				
 				// Update the visualization
 				visualizer->update_visualization();
 				return true;
@@ -198,6 +248,29 @@ namespace atom
 			// Try to move the selected piece
 			if (board_state->move_piece(selected_piece, new_x, new_y))
 			{
+				// Move succeeded, send network message if we're in a networked game
+				if (m_network_manager && m_network_manager->is_connected())
+				{
+					// Get the game piece
+					auto game_piece = std::dynamic_pointer_cast<c_game_piece>(selected_piece);
+					if (game_piece)
+					{
+						// Create network message
+						s_network_message message;
+						message.type = e_message_type::MOVE_PIECE;
+						message.sender_id = m_network_manager->get_client_id();
+						
+						// Pack piece ID and new position
+						message.data.resize(sizeof(uint32_t) + sizeof(uint8_t) * 2);
+						*reinterpret_cast<uint32_t*>(message.data.data()) = game_piece->get_id();
+						*(message.data.data() + sizeof(uint32_t)) = new_x;
+						*(message.data.data() + sizeof(uint32_t) + sizeof(uint8_t)) = new_y;
+						
+						// Send message
+						m_network_manager->send_message(message);
+					}
+				}
+				
 				// Update the visualization
 				visualizer->update_visualization();
 				return true;
@@ -227,6 +300,29 @@ namespace atom
 			// Try to move the selected piece
 			if (board_state->move_piece(selected_piece, new_x, new_y))
 			{
+				// Move succeeded, send network message if we're in a networked game
+				if (m_network_manager && m_network_manager->is_connected())
+				{
+					// Get the game piece
+					auto game_piece = std::dynamic_pointer_cast<c_game_piece>(selected_piece);
+					if (game_piece)
+					{
+						// Create network message
+						s_network_message message;
+						message.type = e_message_type::MOVE_PIECE;
+						message.sender_id = m_network_manager->get_client_id();
+						
+						// Pack piece ID and new position
+						message.data.resize(sizeof(uint32_t) + sizeof(uint8_t) * 2);
+						*reinterpret_cast<uint32_t*>(message.data.data()) = game_piece->get_id();
+						*(message.data.data() + sizeof(uint32_t)) = new_x;
+						*(message.data.data() + sizeof(uint32_t) + sizeof(uint8_t)) = new_y;
+						
+						// Send message
+						m_network_manager->send_message(message);
+					}
+				}
+				
 				// Update the visualization
 				visualizer->update_visualization();
 				return true;
@@ -256,6 +352,29 @@ namespace atom
 			// Try to move the selected piece
 			if (board_state->move_piece(selected_piece, new_x, new_y))
 			{
+				// Move succeeded, send network message if we're in a networked game
+				if (m_network_manager && m_network_manager->is_connected())
+				{
+					// Get the game piece
+					auto game_piece = std::dynamic_pointer_cast<c_game_piece>(selected_piece);
+					if (game_piece)
+					{
+						// Create network message
+						s_network_message message;
+						message.type = e_message_type::MOVE_PIECE;
+						message.sender_id = m_network_manager->get_client_id();
+						
+						// Pack piece ID and new position
+						message.data.resize(sizeof(uint32_t) + sizeof(uint8_t) * 2);
+						*reinterpret_cast<uint32_t*>(message.data.data()) = game_piece->get_id();
+						*(message.data.data() + sizeof(uint32_t)) = new_x;
+						*(message.data.data() + sizeof(uint32_t) + sizeof(uint8_t)) = new_y;
+						
+						// Send message
+						m_network_manager->send_message(message);
+					}
+				}
+				
 				// Update the visualization
 				visualizer->update_visualization();
 				return true;
