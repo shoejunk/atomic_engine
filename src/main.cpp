@@ -1,10 +1,6 @@
-#include "bayou.h"
-#include "network_game_manager.h"
 #include "utility.h"
 
-#include <iostream>
-#include <string>
-#include <memory>
+#include "bayou_client.h"
 
 using namespace atom;
 
@@ -56,25 +52,16 @@ int main(int argc, char* argv[])
 		}
 	}
 	
-	// Create the bayou instance
-	c_bayou bayou;
-	
-	// Create the network game manager with the game state
-	auto network_manager = std::make_shared<c_network_game_manager>(bayou.get_game_state());
-	
-	// Set the network manager in the bayou instance first
-	bayou.set_network_manager(network_manager);
-	
 	// Configure network mode
 	if (is_server)
 	{
 		logln("Starting in server mode...");
-		network_manager->start_server();
 	}
 	else if (is_client)
 	{
 		logln("Starting in client mode, connecting to {}...", server_ip);
-		network_manager->start_client(server_ip);
+		c_bayou_client client;
+		client.go();
 	}
 	else
 	{
@@ -82,5 +69,5 @@ int main(int argc, char* argv[])
 	}
 	
 	// Start the game
-	return bayou.go();
+	return 0;
 }

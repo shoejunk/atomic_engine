@@ -187,5 +187,6 @@ namespace atom
 	};
 
 	using s_vector2i32 = t_vector2<int32_t>;
+	using s_vector2u32 = t_vector2<uint32_t>;
 	using s_vector2u8 = t_vector2<uint8_t>;
 }
